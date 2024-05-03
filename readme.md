@@ -96,3 +96,6 @@ Las contribuciones son muy bienvenidas. Si tienes una mejora, corrección o cara
 ## Licencia
 
 Este proyecto está liberado bajo la licencia [ESPECIFICAR TIPO DE LICENCIA]. Consulta el archivo `LICENSE` para más detalles.
+
+
+Fork de SantiGamer55 a AgustinMadygraf
