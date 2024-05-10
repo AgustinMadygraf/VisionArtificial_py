@@ -9,6 +9,7 @@ pillow = "*"
 numpy = "*"
 requests = "*"
 screeninfo = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 
