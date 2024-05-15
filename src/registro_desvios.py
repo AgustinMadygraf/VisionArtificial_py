@@ -2,6 +2,8 @@
 from logs.config_logger import configurar_logging
 import mysql.connector
 from datetime import datetime
+from pytz import timezone
+import pytz
 
 # Configuración del logger
 logger = configurar_logging()
@@ -42,9 +44,14 @@ def enviar_datos(desvio_mm):
             database="registro_va"
         )
         cursor = conn.cursor()
-        unixtime = int(datetime.now().timestamp())
 
-        dt = datetime.utcfromtimestamp(unixtime)
+        unixtime = int(datetime.now().timestamp())
+        # Obtener la zona horaria de Buenos Aires
+        tz = timezone('America/Argentina/Buenos_Aires')
+
+        # Obtener la fecha y hora en la zona horaria de Buenos Aires
+        dt = datetime.fromtimestamp(unixtime, tz)
+
         
         # Calcular direccion
         direccion = 1 if desvio_mm > 0 else 0
