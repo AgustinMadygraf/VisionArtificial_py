@@ -25,19 +25,14 @@ def registrar_desvio(desvio_mm, TOLERANCIA):
             texto1 = f"Desvio: {desvio_mm} mm - Centrado"
 
         # Ejemplo de datos a insertar
-        datos = [
-            (1234567890, 30, 0),  # unixtime, desvio, enable
-            (1234567891, -5, 1),
-            (1234567892, 3, 1)
-        ]
-        enviar_datos(datos)
+    enviar_datos(desvio_mm)
     return texto1
 
 
 
 
 
-def enviar_datos(datos):
+def enviar_datos(desvio_mm):
     try:
         # Conectar a la base de datos
         conn = mysql.connector.connect(
@@ -47,26 +42,25 @@ def enviar_datos(datos):
             database="registro_va"
         )
         cursor = conn.cursor()
+        unixtime = int(datetime.now().timestamp())
 
+        dt = datetime.utcfromtimestamp(unixtime)
+        
+        # Calcular direccion
+        direccion = 1 if desvio_mm > 0 else 0
+        
+        # Calcular enable
+        enable_val = 1 if abs(desvio_mm) > 2 else 0
 
-        for unixtime, desvio, enable in datos:
-            # Calcular datetime desde unixtime
-            dt = datetime.utcfromtimestamp(unixtime)
-            
-            # Calcular direccion
-            direccion = 1 if desvio > 0 else 0
-            
-            # Calcular enable
-            enable_val = 1 if abs(desvio) > 2 else 0
-            
-            # Insertar datos en la tabla
-            cursor.execute('''
-                INSERT INTO desvio_papel (unixtime, datetime, desvio, direccion, enable)
-                VALUES (%s, %s, %s, %s, %s)
-            ''', (unixtime, dt, desvio, direccion, enable_val))
+        # Insertar datos en la tabla
+        cursor.execute('''
+            INSERT INTO desvio_papel (unixtime, datetime, desvio, direccion, enable)
+            VALUES (%s, %s, %s, %s, %s)
+        ''', (unixtime, dt, desvio_mm, direccion, enable_val))
 
         # Confirmar la transacción
         conn.commit()
+        logger.info("Datos de desvío registrados en la base de datos.")
 
     except mysql.connector.Error as err:
         print(f"Error al conectar a la base de datos: {err}")
@@ -76,6 +70,5 @@ def enviar_datos(datos):
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
             conn.close()
-            print("Conexión cerrada")
 
 

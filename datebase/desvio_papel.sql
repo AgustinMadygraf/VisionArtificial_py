@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 08, 2024 at 06:55 PM
+-- Generation Time: May 15, 2024 at 06:07 PM
 -- Server version: 8.0.17
 -- PHP Version: 7.3.10
 
@@ -29,15 +29,19 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `desvio_papel` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `unixtime` int(11) NOT NULL,
   `datetime` datetime NOT NULL,
   `desvio` float NOT NULL,
   `direccion` tinyint(1) NOT NULL,
-  `enable` tinyint(1) NOT NULL
+  `enable` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-COMMIT;
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+
+--
+-- Dumping data for table `desvio_papel`
+--
+
+
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
