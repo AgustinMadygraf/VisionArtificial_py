@@ -18,7 +18,7 @@
 const char* ssid = "Aula tecnica";
 const char* password = "Madygraf32";
 
-String serverName = "192.168.1.101";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
+String serverName = "192.168.1.116";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
 //String serverName = "example.com";   // OR REPLACE WITH YOUR DOMAIN NAME
 
 String serverPath = "/upload.php";     // The default serverPath should be upload.php
@@ -33,7 +33,6 @@ WiFiClient client;
 #define XCLK_GPIO_NUM      0
 #define SIOD_GPIO_NUM     26
 #define SIOC_GPIO_NUM     27
-
 #define Y9_GPIO_NUM       35
 #define Y8_GPIO_NUM       34
 #define Y7_GPIO_NUM       39
@@ -143,6 +142,11 @@ String sendPhoto() {
   if(!fb) {
     Serial.println("Camera capture failed");
     Serial.println("Reiniciando...");
+    Serial.println();
+    Serial.println();
+    Serial.println();
+    Serial.println();
+    
     delay(1000);
     ESP.restart();
   }
