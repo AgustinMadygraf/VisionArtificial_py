@@ -52,6 +52,9 @@ unsigned long previousMillis = 0;   // last time image was sent
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
+  Serial.println();
+  Serial.println();
+  Serial.println();
   Serial.println("initiating...");
   WiFi.mode(WIFI_STA);
   Serial.println();
