@@ -18,7 +18,7 @@
 const char* ssid = "Aula tecnica";
 const char* password = "Madygraf32";
 
-String serverName = "192.168.1.115";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
+String serverName = "192.168.1.101";   // REPLACE WITH YOUR Raspberry Pi IP ADDRESS
 //String serverName = "example.com";   // OR REPLACE WITH YOUR DOMAIN NAME
 
 String serverPath = "/upload.php";     // The default serverPath should be upload.php
@@ -52,7 +52,7 @@ unsigned long previousMillis = 0;   // last time image was sent
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); 
   Serial.begin(115200);
-
+  Serial.println("initiating...");
   WiFi.mode(WIFI_STA);
   Serial.println();
   Serial.print("Connecting to ");
@@ -93,10 +93,14 @@ void setup() {
     config.frame_size = FRAMESIZE_SVGA;
     config.jpeg_quality = 10;  //0-63 lower number means higher quality
     config.fb_count = 2;
+    Serial.println("PSRAM found");
+    Serial.println("Frame size: FRAMESIZE_SVGA");
   } else {
     config.frame_size = FRAMESIZE_CIF;
     config.jpeg_quality = 12;  //0-63 lower number means higher quality
     config.fb_count = 1;
+    Serial.println("PSRAM not found");
+    Serial.println("Frame size: FRAMESIZE_CIF");
   }
   
 // Inicialización de la cámara
@@ -105,18 +109,24 @@ Serial.println("Iniciando cámara...");
 esp_err_t err = esp_camera_init(&config);
 
 if (err != ESP_OK) {
-    Serial.printf("La inicialización de la cámara falló con el error 0x%x. Reiniciando...", err);
+    Serial.printf("La inicialización de la cámara falló con el error 0x%x. ", err);
+    Serial.println("Reiniciando...");
+    Serial.println();
     delay(1000);
     ESP.restart();
 } else {
-    Serial.println("¡Cámara lista!");
-    sendPhoto();
+    Serial.println("¡Cámara Inicializada!");
 }
 }
+
 void loop() {
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= timerInterval) {
+    // Imprimir la cantidad de memoria libre antes de intentar capturar una imagen
+    Serial.printf("Memoria libre antes de capturar la imagen: %u bytes\n", esp_get_free_heap_size());
     sendPhoto();
+    // Imprimir la cantidad de memoria libre después de intentar capturar una imagen
+    Serial.printf("Memoria libre después de capturar la imagen: %u bytes\n", esp_get_free_heap_size());
     previousMillis = currentMillis;
   }
 }
@@ -129,6 +139,7 @@ String sendPhoto() {
   fb = esp_camera_fb_get();
   if(!fb) {
     Serial.println("Camera capture failed");
+    Serial.println("Reiniciando...");
     delay(1000);
     ESP.restart();
   }
