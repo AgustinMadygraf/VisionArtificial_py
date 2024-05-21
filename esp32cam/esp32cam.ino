@@ -92,19 +92,19 @@ void setup() {
 
   // init with high specs to pre-allocate larger buffers
   if(psramFound()){
-    config.frame_size = FRAMESIZE_SVGA;
+    config.frame_size = FRAMESIZE_QVGA;
     config.jpeg_quality = 10;  //0-63 lower number means higher quality
     config.fb_count = 2;
     Serial.println("PSRAM found");
-    Serial.println("Frame size: FRAMESIZE_SVGA");
   } else {
     config.frame_size = FRAMESIZE_CIF;
     config.jpeg_quality = 12;  //0-63 lower number means higher quality
     config.fb_count = 1;
     Serial.println("PSRAM not found");
-    Serial.println("Frame size: FRAMESIZE_CIF");
   }
-  
+  Serial.printf("\nFrame size: %d", config.frame_size);
+  Serial.println();
+
 // Inicialización de la cámara
 Serial.println("Iniciando cámara...");
 
