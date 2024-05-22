@@ -28,6 +28,7 @@ const int serverPort = 80;
 WiFiClient client;
 
 // CAMERA_MODEL_AI_THINKER
+#define FLASH_GPIO_NUM     4
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      0
@@ -68,6 +69,9 @@ void setup() {
   Serial.print("ESP32-CAM IP Address: ");
   Serial.println(WiFi.localIP());
 
+    // Configurar el pin del flash como salida
+  pinMode(FLASH_GPIO_NUM, OUTPUT);
+  
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
@@ -107,7 +111,6 @@ void setup() {
 
 // Inicialización de la cámara
 Serial.println("Iniciando cámara...");
-
 esp_err_t err = esp_camera_init(&config);
 
 if (err != ESP_OK) {
@@ -137,6 +140,11 @@ String sendPhoto() {
   String getAll;
   String getBody;
 
+  // Apagar el flash inicialmente
+  digitalWrite(FLASH_GPIO_NUM, HIGH); // Enciende el flash
+  delay(1);
+  digitalWrite(FLASH_GPIO_NUM, LOW);  // Apaga el flash
+
   camera_fb_t * fb = NULL;
   fb = esp_camera_fb_get();
   if(!fb) {
@@ -146,8 +154,6 @@ String sendPhoto() {
     Serial.println();
     Serial.println();
     Serial.println();
-    
-    delay(1000);
     ESP.restart();
   }
   
