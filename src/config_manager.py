@@ -11,7 +11,6 @@ def leer_configuracion(config_path):
     Lee la configuración desde el archivo 'config.json' y devuelve un diccionario con los valores configurados.
     Si el archivo no existe, se crea uno con valores predeterminados.
     """
-    config_path = 'src/config.json'
     configuracion_predeterminada = {
         "grados_rotacion_default": 0.0,
         "horizontal_default": 0.0,

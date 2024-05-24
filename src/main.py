@@ -59,6 +59,7 @@ if __name__ == "__main__":
         actualizar_configuracion(config_path, nueva_config)
 
         default_video_url = manejar_menu(config)
+        print(f"default_video_url: {default_video_url}")
 
         root = tk.Tk()
         app = VideoStreamApp(root, default_video_url, grados_rotacion, altura, horizontal, pixels_por_mm)
