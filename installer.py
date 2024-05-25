@@ -72,7 +72,7 @@ def main():
     limpieza_pantalla()
     logger.info("Iniciando instalador")
 
-    # Crear archivo BAT
+    # Crear archivo BAT 
     ruta_archivo_bat = directorio_script / 'VisionArtificial.bat'
     if not ruta_archivo_bat.is_file():
         logger.info("Creando archivo 'VisionArtificial.bat'")
