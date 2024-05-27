@@ -30,8 +30,6 @@ def registrar_desvio(desvio_mm, TOLERANCIA):
         else:
             texto1 = f"Desvio: {desvio_mm} mm - Centrado"
 
-        # Ejemplo de datos a insertar
-    enviar_datos(desvio_mm)
     return texto1
 
 def enviar_datos(web):

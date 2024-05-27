@@ -18,13 +18,30 @@ void handleRoot() {
 
 void handleOutputENA_f() {
   digitalWrite(pinOutput_ENA, LOW); // ENA se enciende con LOW
+  digitalWrite(pinOutput_DIR, LOW); //Forward
   server.send(200, "text/plain", "Motor en Marcha");
+  for (int i = 0; i < 200; i++) {
+    digitalWrite(pinOutput_PUL, HIGH);
+    delayMicroseconds(1000);
+    digitalWrite(pinOutput_PUL, LOW);
+    delayMicroseconds(1000);
+  }
+
 }
 
 void handleOutputENA_r() {
-  digitalWrite(pinOutput_ENA, HIGH); // ENA se apaga con HIGH
-  server.send(200, "text/plain", "Motor Detenido");
+  digitalWrite(pinOutput_ENA, LOW); // ENA se apaga con HIGH
+  digitalWrite(pinOutput_DIR, HIGH); //Reverse
+  server.send(200, "text/plain", "Motor en Reversa");
+    for (int i = 0; i < 200; i++) {
+    digitalWrite(pinOutput_PUL, HIGH);
+    delayMicroseconds(1000);
+    digitalWrite(pinOutput_PUL, LOW);
+    delayMicroseconds(1000);
+  }
 }
+
+
 
 void setup() {
   Serial.begin(115200);
