@@ -3,7 +3,7 @@ from logs.config_logger import configurar_logging
 import mysql.connector
 from datetime import datetime
 from pytz import timezone
-import pytz
+import requests
 
 # Configuración del logger
 logger = configurar_logging()
@@ -13,10 +13,14 @@ def registrar_desvio(desvio_mm, TOLERANCIA):
     if desvio_mm > TOLERANCIA:
         logger.info(f"Desvío registrado: {desvio_mm} mm ENG")
         texto1 = f" Desvio: {desvio_mm} mm ENG"
+        enviar_datos("ena_f")
+
 
     elif desvio_mm < -TOLERANCIA:
         logger.info(f"Desvío registrado: {desvio_mm} mm OP")
         texto1 = f"Desvio: {desvio_mm} mm OP"
+        enviar_datos("ena_r")
+
     else:  # Esto cubre el caso donde el desvío está dentro de la tolerancia de +/- 2mm
         logger.info(f"Desvío registrado: {desvio_mm} mm - Centrado")
         if desvio_mm > 0:
@@ -30,11 +34,21 @@ def registrar_desvio(desvio_mm, TOLERANCIA):
     enviar_datos(desvio_mm)
     return texto1
 
+def enviar_datos(web):
+    print(f"Enviando datos al espwroonm32 {web}")
+    IP = "192.168.1.105"
+    url = f"http://{IP}/{web}"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            print(f"Datos enviados exitosamente a {url}")
+        else:
+            print(f"Error al enviar datos a {url}. Estado de la respuesta: {response.status_code}")
+    except requests.RequestException as e:
+        print(f"Error de conexión: {e}")
 
 
-
-
-def enviar_datos(desvio_mm):
+def enviar_datos_sql(desvio_mm):
     try:
         # Conectar a la base de datos
         conn = mysql.connector.connect(
