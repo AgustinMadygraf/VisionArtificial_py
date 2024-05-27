@@ -7,7 +7,7 @@ from deteccion_bordes import encontrar_borde
 from logs.config_logger import configurar_logging
 from registro_desvios import registrar_desvio 
 
-TOLERANCIA = 2  # Tolerancia en milímetros
+TOLERANCIA = 1  # Tolerancia en milímetros
 
 # Configuración del logger
 logger = configurar_logging()
