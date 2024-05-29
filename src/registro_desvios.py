@@ -34,7 +34,7 @@ def registrar_desvio(desvio_mm, TOLERANCIA):
 
 def enviar_datos(web):
     print(f"Enviando datos al espwroonm32 {web}")
-    IP = "192.168.1.100"
+    IP = "192.168.1.184"
     url = f"http://{IP}/{web}"
     try:
         response = requests.get(url)
