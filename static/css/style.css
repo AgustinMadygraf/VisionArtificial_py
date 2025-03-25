@@ -1,0 +1,109 @@
+/* Agrega una clase para ocultar el botón */
+.hidden {
+    display: none;
+}
+
+/* Otros estilos */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header, footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border: 2px solid violet; /* Cambio de color del borde a violeta */
+    box-sizing: border-box; /* Ensure the border is included in the width and height */
+}
+
+.video-section, .image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 50%;
+    box-sizing: border-box;
+}
+
+.video-section h2, .image-section h2 {
+    margin: 0;
+    padding: 0.5rem;
+    background-color: #333;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    border: 2px solid skyblue; /* Cambio de color del borde a celeste */
+    box-sizing: border-box; /* Ensure the border is included in the width and height */
+    margin: 0;
+}
+
+#image-canvas {
+    width: 100%;
+    height: 100%;
+    border: 2px solid green; /* Cambio de color del borde a verde */
+    box-sizing: border-box; /* Ensure the border is included in the width and height */
+    margin: 0;
+}
+
+video, #image-canvas img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the content covers the element */
+}
+
+button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para orientación horizontal */
+@media (orientation: landscape) {
+    #container {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .video-section, .image-section {
+        width: 50%;
+        height: 100%;
+    }
+}

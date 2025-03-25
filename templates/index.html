@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visión Artificial</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <header class="bg-dark text-white text-center p-3">
+        <h1>Visión Artificial</h1>
+    </header>
+    <main class="container my-4">
+        <div id="container" class="row mt-4">
+            <div class="video-section col-md-6 mb-3">
+                <h2>Original</h2>
+                <img id="vid" src="{{ url_for('video.video_feed') }}" class="w-100" alt="Video Feed">
+            </div>
+            <div class="image-section col-md-6 mb-3">
+                <h2>Procesada</h2>
+                <div id="image-canvas" class="border">
+                    <img class="w-100">
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-secondary text-white text-center p-3">
+        <p>&copy; 2024 Visión Artificial. Todos los derechos reservados.</p>
+    </footer>
+</body>
+
+</html>

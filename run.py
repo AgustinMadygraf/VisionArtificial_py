@@ -2,9 +2,10 @@
 Path: run.py
 Archivo de entrada simplificado para iniciar la aplicación.
 """
-import os
-from src.main import main
+
+from src.factory import create_app
+
+app = create_app()
 
 if __name__ == "__main__":
-    os.system("cls")
-    main()
+    app.run(debug=True)
