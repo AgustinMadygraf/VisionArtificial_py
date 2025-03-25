@@ -6,11 +6,11 @@ y mantenibilidad.
 """
 
 import cv2
-from src.utils.logging.simple_logger import LoggerService
+from src.utils.logging.simple_logger import get_logger_instance
 
 class Camera:
     def __init__(self):
-        self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Cambiado para usar DirectShow
+        self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
     def __enter__(self):
         return self
@@ -20,7 +20,7 @@ class Camera:
             self.cap.release()
 
     def frames(self):
-        logger = LoggerService()  # nuevo logger
+        logger = get_logger_instance()
         try:
             while True:
                 success, frame = self.cap.read()

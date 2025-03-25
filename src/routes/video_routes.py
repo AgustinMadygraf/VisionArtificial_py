@@ -4,7 +4,7 @@ Path: src/routes/video_routes.py
 
 from flask import Blueprint, Response
 from src.camera import Camera
-from src.utils.logging.simple_logger import LoggerService
+from src.utils.logging.simple_logger import get_logger_instance
 import cv2  # nuevo import
 
 video_bp = Blueprint('video', __name__)
@@ -12,7 +12,7 @@ video_bp = Blueprint('video', __name__)
 @video_bp.route("/video_feed")
 def video_feed():
     def gen_frames():
-        logger = LoggerService()
+        logger = get_logger_instance()
         logger.info("Starting video feed")
         try:
             with Camera() as cam:
@@ -27,7 +27,7 @@ def video_feed():
 @video_bp.route("/processed_feed")
 def processed_feed():
     def gen_processed_frames():
-        logger = LoggerService()
+        logger = get_logger_instance()
         logger.info("Starting processed video feed")
         try:
             with Camera() as cam:
