@@ -4,6 +4,7 @@ from tkinter import Tk, Label
 from PIL import Image, ImageTk
 from src.camera import Camera
 from src.utils.logging.simple_logger import get_logger_instance
+from src.image_processing import process_frame  # nuevo import
 
 class TkinterViewer:
     def __init__(self):
@@ -20,8 +21,7 @@ class TkinterViewer:
             if self.cam is not None:
                 success, frame = self.cam.cap.read()
                 if success:
-                    height, width, _ = frame.shape
-                    cv2.line(frame, (width // 2, 0), (width // 2, height), (0, 0, 255), 2)  # línea vertical roja
+                    frame = process_frame(frame)  # Se utiliza el procesamiento centralizado
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     im = Image.fromarray(frame)
                     imgtk = ImageTk.PhotoImage(image=im)
