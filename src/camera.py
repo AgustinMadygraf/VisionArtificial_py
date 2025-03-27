@@ -3,7 +3,13 @@ Path: src/camera.py
 """
 
 import cv2
-from src.utils.logging.simple_logger import get_logger_instance
+from src.utils.logging.simple_logger import LoggerService
+
+_logger_service_instance = LoggerService()
+
+def get_logger_instance():
+    return _logger_service_instance
+
 
 class Camera:
     "Clase para capturar video desde la cámara."

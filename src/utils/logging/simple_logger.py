@@ -70,8 +70,3 @@ class LoggerService(ILogger):
         "Registra un mensaje de excepción con información de la traza."
         self._logger.exception(msg, *args, stacklevel=2, **kwargs)
 
-# Centralización: se crea una única instancia del LoggerService
-_logger_service_instance = LoggerService()
-
-def get_logger_instance():
-    return _logger_service_instance

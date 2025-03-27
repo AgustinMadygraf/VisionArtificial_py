@@ -5,13 +5,12 @@ Este módulo invoca main() de src/main.py, que orquesta la inicialización y eje
 """
 
 from src.coordinator import ApplicationCoordinator
-from src.utils.logging.simple_logger import get_logger_instance
-
-logger = get_logger_instance()
+from src.utils.logging.simple_logger import LoggerService
 
 if __name__ == "__main__":
     try:
-        coordinator = ApplicationCoordinator()
+        logger = LoggerService()
+        coordinator = ApplicationCoordinator(logger)
         coordinator.run()
     except KeyboardInterrupt:
         logger.info("Interrupción detectada (Ctrl+C). Cerrando aplicación...")

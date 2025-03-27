@@ -4,9 +4,14 @@ Path: src/routes/video_routes.py
 
 from flask import Blueprint, Response
 from src.camera import Camera
-from src.utils.logging.simple_logger import get_logger_instance
 from src.image_processing import process_frame
 import cv2
+from src.utils.logging.simple_logger import LoggerService
+
+_logger_service_instance = LoggerService()
+
+def get_logger_instance():
+    return _logger_service_instance
 
 video_bp = Blueprint('video', __name__)
 
