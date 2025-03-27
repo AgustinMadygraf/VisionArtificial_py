@@ -5,8 +5,8 @@ Path: src/routes/video_routes.py
 from flask import Blueprint, Response
 from src.camera import Camera
 from src.utils.logging.simple_logger import get_logger_instance
-from src.image_processing import process_frame  # nuevo import
-import cv2  # nuevo import
+from src.image_processing import process_frame
+import cv2
 
 video_bp = Blueprint('video', __name__)
 
@@ -36,7 +36,7 @@ def processed_feed():
                     success, frame = cam.cap.read()
                     if not success:
                         break
-                    frame = process_frame(frame)  # Se utiliza el procesamiento centralizado
+                    frame = process_frame(frame)
                     ret, buffer = cv2.imencode('.jpg', frame)
                     yield (b'--frame\r\n'
                            b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')

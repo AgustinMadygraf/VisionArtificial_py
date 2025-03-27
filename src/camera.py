@@ -1,8 +1,5 @@
 """
 Path: src/camera.py
-Módulo que encapsula la lógica de captura de video. La clase Camera abre la cámara,
-genera frames codificados y se asegura de liberar los recursos, facilitando pruebas
-y mantenibilidad.
 """
 
 import cv2

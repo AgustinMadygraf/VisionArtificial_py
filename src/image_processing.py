@@ -1,23 +1,11 @@
 """
-Módulo para procesamiento de imagen.
-Define funciones para modificar frames, agregando líneas verticales y horizontales en el centro.
-
-Función principal:
-  - process_frame: Recibe un frame, dibuja una línea vertical y una línea horizontal en el centro, y retorna el frame modificado.
+Path: src/image_processing.py
 """
 
 import cv2
 
 def process_frame(frame):
-    """
-    Procesa la imagen añadiendo una línea vertical y una línea horizontal en el centro.
-    
-    Parámetros:
-        frame (numpy.ndarray): La imagen a procesar.
-    
-    Retorna:
-        numpy.ndarray: La imagen procesada.
-    """
+    "Procesa el marco de video para agregar líneas de referencia."
     height, width, _ = frame.shape
     # Dibujar línea vertical en el centro
     cv2.line(frame, (width // 2, 0), (width // 2, height), (0, 0, 255), 2)

@@ -1,10 +1,14 @@
+"""
+Path: src/tkinter_view.py
+"""
+
 import cv2
 import numpy as np
 from tkinter import Tk, Label
 from PIL import Image, ImageTk
 from src.camera import Camera
 from src.utils.logging.simple_logger import get_logger_instance
-from src.image_processing import process_frame  # nuevo import
+from src.image_processing import process_frame
 
 class TkinterViewer:
     def __init__(self):
