@@ -13,14 +13,20 @@ Esta organización permite una separación clara entre la lógica de negocio y l
 from flask import Flask
 from src.routes.main_routes import main_bp
 from src.routes.video_routes import video_bp
-from config import AppConfig
+from src.config import AppConfig
+from src.utils.logging.simple_logger import get_logger_instance
+
+logger = get_logger_instance()
 
 class AppFactory:
+    " Clase responsable de crear la aplicación Flask."
     def __init__(self, config: AppConfig):
         self.config = config
 
     def create_app(self):
         app = Flask(__name__, template_folder=self.config.TEMPLATE_FOLDER, static_folder=self.config.STATIC_FOLDER)
         app.register_blueprint(main_bp)
+        logger.info("Blueprint 'main_routes' registrado correctamente.")
         app.register_blueprint(video_bp)
+        logger.info("Blueprint 'video_routes' registrado correctamente.")
         return app
