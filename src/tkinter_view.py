@@ -3,11 +3,10 @@ Path: src/tkinter_view.py
 """
 
 import cv2
-import numpy as np
 from tkinter import Tk, Label
 from PIL import Image, ImageTk
-from src.camera import Camera
-from src.image_processing import process_frame
+from src.services.frame_processor import FrameProcessor
+from src.services.camera_service import CameraService
 
 class TkinterViewer:
     " Clase para crear una interfaz gráfica con Tkinter que muestra la vista de la cámara."
@@ -34,7 +33,7 @@ class TkinterViewer:
             if self.cam is not None:
                 success, frame = self.cam.cap.read()
                 if success:
-                    frame = process_frame(frame)
+                    frame = FrameProcessor.process(frame)
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     im = Image.fromarray(frame)
                     imgtk = ImageTk.PhotoImage(image=im)
@@ -48,9 +47,23 @@ class TkinterViewer:
             self.root.after(1000, self.update_frame)
 
     def run(self):
-        with Camera(self.logger) as cam:  # Inyección consistente del logger
-            self.cam = cam
+        self.cam_service = CameraService(self.logger)
+        self.cam = self.cam_service.__enter__()
+        try:
             self.root.mainloop()
-
+        finally:
+            try:
+                if self.cam is not None:
+                    self.cam_service.__exit__(None, None, None)
+                    self.logger.info("Camera released successfully via CameraService.")
+            except Exception as e:
+                self.logger.exception("Error releasing camera in run()")
+    
     def stop(self):
+        if self.cam is not None:
+            try:
+                self.cam.cap.release()
+                self.logger.info("Camera released in stop().")
+            except Exception as e:
+                self.logger.exception("Error releasing camera in stop()")
         self.root.quit()

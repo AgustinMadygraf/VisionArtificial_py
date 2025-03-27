@@ -1,8 +1,15 @@
 """
-Path: src/image_processing.py
+Path: src/services/frame_processor.py
 """
 
 import cv2
+
+class FrameProcessor:
+    " "
+    @staticmethod
+    def process(frame):
+        return process_frame(frame)
+
 
 def process_frame(frame):
     "Procesa el marco de video para agregar líneas de referencia."

@@ -2,9 +2,8 @@
 Path: src/routes/main_routes.py
 """
 
-from flask import Blueprint, render_template
-from flask import request
-import os
+from flask import Blueprint, render_template, request
+import sys
 
 main_bp = Blueprint('main', __name__)
 
@@ -12,10 +11,10 @@ main_bp = Blueprint('main', __name__)
 def home():
     return render_template("index.html")
 
-@main_bp.route("/shutdown")
+@main_bp.route("/shutdown", methods=["GET"])
 def shutdown():
-    shutdown_func = request.environ.get('werkzeug.server.shutdown')
-    if shutdown_func is None:
-        os._exit(0)
-    shutdown_func()
-    return "Servidor cerrándose..."
+    func = request.environ.get("werkzeug.server.shutdown")
+    if func is None:
+        sys.exit("Shutdown not available. Exiting.")
+    func()
+    return "Server shutting down..."
