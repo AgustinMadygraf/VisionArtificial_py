@@ -6,6 +6,7 @@ import cv2
 from src.utils.logging.simple_logger import get_logger_instance
 
 class Camera:
+    "Clase para capturar video desde la cámara."
     def __init__(self):
         self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 

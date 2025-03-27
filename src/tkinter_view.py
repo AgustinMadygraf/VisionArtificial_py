@@ -42,3 +42,7 @@ class TkinterViewer:
         with Camera() as cam:
             self.cam = cam
             self.root.mainloop()
+
+    def stop(self):
+        # Permite detener la interfaz
+        self.root.quit()
