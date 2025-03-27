@@ -8,20 +8,19 @@ from src.image_processing import process_frame
 import cv2
 from src.utils.logging.simple_logger import LoggerService
 
-_logger_service_instance = LoggerService()
-
-def get_logger_instance():
-    return _logger_service_instance
-
 video_bp = Blueprint('video', __name__)
+
+def get_logger():
+    # Permite inyectar el logger configurado en el blueprint, o crea uno por defecto.
+    return getattr(video_bp, 'logger', None) or LoggerService()
 
 @video_bp.route("/video_feed")
 def video_feed():
     def gen_frames():
-        logger = get_logger_instance()
+        logger = get_logger()
         logger.info("Starting video feed")
         try:
-            with Camera() as cam:
+            with Camera(logger) as cam:
                 for frame in cam.frames():
                     yield (b'--frame\r\n'
                            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -33,10 +32,10 @@ def video_feed():
 @video_bp.route("/processed_feed")
 def processed_feed():
     def gen_processed_frames():
-        logger = get_logger_instance()
+        logger = get_logger()
         logger.info("Starting processed video feed")
         try:
-            with Camera() as cam:
+            with Camera(logger) as cam:
                 while True:
                     success, frame = cam.cap.read()
                     if not success:

@@ -18,7 +18,7 @@ class ApplicationCoordinator:
         self.flask_app = self.app_factory.create_app()
         self.tk_viewer = TkinterViewer(self.logger)
 
-    def run(self):
+    def run_flask(self):
         self.logger.info("Iniciando servidor Flask...")
         flask_thread = threading.Thread(
             target=self.flask_app.run,
@@ -26,13 +26,25 @@ class ApplicationCoordinator:
         )
         flask_thread.start()
         self.logger.info("Servidor Flask iniciado.")
+        return flask_thread
+
+    def run_tkinter(self):
         self.logger.info("Iniciando interfaz Tkinter...")
         self.tk_viewer.run()
         self.logger.info("Interfaz Tkinter cerrada.")
-        sys.exit(0)
-        self.flask_app.shutdown()
-        self.logger.info("Servidor Flask cerrado.")
+
+    def run(self):
+        flask_thread = self.run_flask()
+        self.run_tkinter()
+        self.logger.info("Cerrando servidor Flask...")
+        import requests
+        try:
+            requests.get("http://127.0.0.1:5000/shutdown")
+        except Exception as e:
+            self.logger.exception("Error al enviar solicitud de shutdown a Flask")
+        self.logger.info("Esperando a que el hilo del servidor Flask finalice...")
         flask_thread.join()
+        self.logger.info("Servidor Flask cerrado.")
         self.logger.info("Aplicación cerrada.")
         sys.exit(0)
 

@@ -48,7 +48,7 @@ class TkinterViewer:
             self.root.after(1000, self.update_frame)
 
     def run(self):
-        with Camera() as cam:
+        with Camera(self.logger) as cam:  # Inyección consistente del logger
             self.cam = cam
             self.root.mainloop()
 
