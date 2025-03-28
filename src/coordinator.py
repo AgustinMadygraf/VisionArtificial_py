@@ -50,8 +50,14 @@ class ApplicationCoordinator:
             self.logger.info("Shutdown request sent; connection closed as expected.")
         except requests.exceptions.RequestException:
             self.logger.exception("Error al enviar solicitud de shutdown a Flask")
+
         self.logger.info("Esperando a que el hilo del servidor Flask finalice...")
-        flask_thread.join()
-        self.logger.info("Servidor Flask cerrado.")
+        flask_thread.join(timeout=1)
+        if flask_thread.is_alive():
+            self.logger.warning(
+                "El hilo del servidor Flask no se cerró en el tiempo esperado, "
+                "forzando salida."
+            )
+        else:
+            self.logger.info("Servidor Flask cerrado.")
         self.logger.info("Aplicación cerrada.")
-        # Removed sys.exit(0) to allow controlled shutdown

@@ -24,7 +24,14 @@ class TkinterViewer:
         control_frame.pack()
         self.decrement_btn = Button(control_frame, text="-", command=self.on_decrement)
         self.decrement_btn.pack(side="left")
-        self.scale = Scale(control_frame, from_=1, to=100, orient=HORIZONTAL, label="Pixels to Units", command=self.on_scale_change)
+        self.scale = Scale(
+            control_frame,
+            from_=1,
+            to=100,
+            orient=HORIZONTAL,
+            label="Pixels to Units",
+            command=self.on_scale_change
+        )
         self.scale.set(DEFAULT_CONFIG.PIXELS_TO_UNITS)
         self.scale.pack(side="left")
         self.increment_btn = Button(control_frame, text="+", command=self.on_increment)
@@ -36,7 +43,10 @@ class TkinterViewer:
     def report_callback_exception(self, exc, val, tb):
         "Maneja excepciones no controladas en Tkinter."
         if issubclass(exc, KeyboardInterrupt):
-            self.logger.info("KeyboardInterrupt detectado en callback de Tkinter. Cerrando aplicación...")
+            self.logger.info(
+                "KeyboardInterrupt detectado en callback de Tkinter. "
+                "Cerrando aplicación..."
+            )
             self.root.quit()
         else:
             self.logger.exception("Excepción no controlada en Tkinter", exc_info=(exc, val, tb))
@@ -63,7 +73,6 @@ class TkinterViewer:
 
     def on_scale_change(self, value):
         "Callback para actualizar el parámetro PIXELS_TO_UNITS en tiempo real."
-        from src.config import DEFAULT_CONFIG
         try:
             DEFAULT_CONFIG.PIXELS_TO_UNITS = float(value)
             self.logger.info(f"Updated PIXELS_TO_UNITS to {DEFAULT_CONFIG.PIXELS_TO_UNITS}")

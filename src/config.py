@@ -11,6 +11,4 @@ class AppConfig:
 
 DEBUG = True
 
-# Agregado: instancia por defecto para configuración global
 DEFAULT_CONFIG = AppConfig()
-# Nota: DEFAULT_CONFIG.PIXELS_TO_UNITS ahora es el parámetro centralizado y se puede modificar en tiempo real desde la interfaz Tkinter.
