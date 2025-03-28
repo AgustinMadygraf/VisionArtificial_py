@@ -1,7 +1,8 @@
 """
 Path: run.py
 Inicio de la aplicación.
-Este módulo invoca main() de src/main.py, que orquesta la inicialización y ejecución de los componentes.
+Este módulo invoca main() de src/main.py, que orquesta la inicialización
+y ejecución de los componentes.
 """
 
 from src.coordinator import ApplicationCoordinator

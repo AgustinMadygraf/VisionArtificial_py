@@ -23,6 +23,7 @@ class AppFactory:
         self.logger = logger
 
     def create_app(self):
+        "Crea y configura la aplicación Flask."
         app = Flask(__name__, template_folder=self.config.TEMPLATE_FOLDER, static_folder=self.config.STATIC_FOLDER)
         app.register_blueprint(main_bp)
         self.logger.info("Blueprint 'main_routes' registrado correctamente.")

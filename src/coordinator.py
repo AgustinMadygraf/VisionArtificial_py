@@ -3,11 +3,10 @@ Path: src/coordinator.py
 """
 
 import threading
-import sys
+import requests
 from src.factory import AppFactory
 from src.config import AppConfig
 from src.tkinter_view import TkinterViewer
-import requests
 
 class ApplicationCoordinator:
     "Clase coordinadora que orquesta la inicialización y ejecución de la aplicación."
@@ -21,6 +20,7 @@ class ApplicationCoordinator:
         self.shutdown_event = threading.Event()
 
     def run_flask(self):
+        "Inicia el servidor Flask en un hilo separado."
         self.logger.info("Iniciando servidor Flask...")
         flask_thread = threading.Thread(
             target=self.flask_app.run,
@@ -32,25 +32,26 @@ class ApplicationCoordinator:
         return flask_thread
 
     def run_tkinter(self):
+        "Inicia la interfaz gráfica de Tkinter."
         self.logger.info("Iniciando interfaz Tkinter...")
         self.tk_viewer.run()
         self.logger.info("Interfaz Tkinter cerrada.")
 
     def run(self):
+        "Inicia la aplicación coordinando el servidor Flask y la interfaz Tkinter."
         flask_thread = self.run_flask()
         self.run_tkinter()
         self.logger.info("Señalizando cierre de la aplicación...")
         self.shutdown_event.set()
         self.logger.info("Cerrando servidor Flask...")
         try:
-            requests.get("http://127.0.0.1:5000/shutdown")
+            requests.get("http://127.0.0.1:5000/shutdown", timeout=1)
         except requests.exceptions.ConnectionError:
             self.logger.info("Shutdown request sent; connection closed as expected.")
-        except Exception as e:
+        except requests.exceptions.RequestException:
             self.logger.exception("Error al enviar solicitud de shutdown a Flask")
         self.logger.info("Esperando a que el hilo del servidor Flask finalice...")
-        flask_thread.join(timeout=1)
-        self.logger.info("Servidor Flask cerrado o timeout alcanzado en join.")
+        flask_thread.join()
+        self.logger.info("Servidor Flask cerrado.")
         self.logger.info("Aplicación cerrada.")
-        sys.exit(0)
-
+        # Removed sys.exit(0) to allow controlled shutdown

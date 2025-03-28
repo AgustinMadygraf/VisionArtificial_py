@@ -11,10 +11,12 @@ from src.utils.logging.simple_logger import LoggerService
 video_bp = Blueprint('video', __name__)
 
 def get_logger():
+    " Función para obtener el logger."
     return getattr(video_bp, 'logger', None) or LoggerService()
 
 @video_bp.route("/video_feed")
 def video_feed():
+    " Ruta para el flujo de video sin procesar."
     def gen_frames():
         logger = get_logger()
         logger.info("Starting video feed")
@@ -30,6 +32,7 @@ def video_feed():
 
 @video_bp.route("/processed_feed")
 def processed_feed():
+    "Ruta para el flujo de video procesado."
     def gen_processed_frames():
         logger = get_logger()
         logger.info("Starting processed video feed")
@@ -40,7 +43,7 @@ def processed_feed():
                     if not success:
                         break
                     frame = FrameProcessor.process(frame)
-                    ret, buffer = cv2.imencode('.jpg', frame)
+                    _, buffer = cv2.imencode('.jpg', frame)
                     yield (b'--frame\r\n'
                            b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
         except Exception as e:

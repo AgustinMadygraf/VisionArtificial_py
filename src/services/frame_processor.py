@@ -5,9 +5,10 @@ Path: src/services/frame_processor.py
 import cv2
 
 class FrameProcessor:
-    " "
+    " Clase para procesar los marcos de video."
     @staticmethod
     def process(frame):
+        "Procesa el marco de video para agregar líneas de referencia."
         return process_frame(frame)
 
 

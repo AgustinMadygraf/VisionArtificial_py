@@ -20,6 +20,6 @@ class CameraService:
             try:
                 self.camera.cap.release()
                 self.logger.info("Cámara liberada por CameraService")
-            except Exception as e:
+            except RuntimeError:
                 self.logger.exception("Error al liberar la cámara en CameraService")
         return False
