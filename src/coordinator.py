@@ -7,6 +7,8 @@ import requests
 from src.factory import AppFactory
 from src.config import AppConfig
 from src.tkinter_view import TkinterViewer
+from src.services.configuration_service import ConfigurationService
+from src.services.frame_processor import FrameProcessor
 
 class ApplicationCoordinator:
     "Clase coordinadora que orquesta la inicialización y ejecución de la aplicación."
@@ -14,9 +16,18 @@ class ApplicationCoordinator:
         self.logger = logger
         self.config = AppConfig()
         self.logger.debug("Configuración de la aplicación: %s", self.config.__dict__)
+        
+        # Inicializar el servicio de configuración centralizado
+        self.config_service = ConfigurationService(logger)
+        self.logger.info("Servicio de configuración inicializado")
+        
+        # Configurar el FrameProcessor para usar el servicio de configuración
+        FrameProcessor.set_config_service(self.config_service)
+        self.logger.info("FrameProcessor configurado para usar el servicio de configuración")
+        
         self.app_factory = AppFactory(self.config, self.logger)
         self.flask_app = self.app_factory.create_app()
-        self.tk_viewer = TkinterViewer(self.logger)
+        self.tk_viewer = TkinterViewer(self.logger, self.config_service)
         self.shutdown_event = threading.Event()
 
     def run_flask(self):

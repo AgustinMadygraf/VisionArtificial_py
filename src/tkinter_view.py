@@ -8,12 +8,14 @@ import cv2
 from PIL import Image, ImageTk
 from src.services.frame_processor import FrameProcessor
 from src.services.camera_service import CameraService
+from src.interfaces.IConfigurationService import IConfigurationService
 from src.config import DEFAULT_CONFIG
 
 class TkinterViewer:
     " Clase para crear una interfaz gráfica con Tkinter que muestra la vista de la cámara."
-    def __init__(self, logger):
+    def __init__(self, logger, config_service=None):
         self.logger = logger
+        self.config_service = config_service
         self.root = Tk()
         self.root.title("Vista Procesada")
         self.root.report_callback_exception = self.report_callback_exception
@@ -32,7 +34,17 @@ class TkinterViewer:
             label="Pixels to Units",
             command=self.on_scale_change
         )
-        self.scale.set(DEFAULT_CONFIG.PIXELS_TO_UNITS)
+        
+        # Obtener la configuración inicial del servicio si está disponible,
+        # o usar DEFAULT_CONFIG como respaldo
+        if self.config_service:
+            initial_value = self.config_service.get("PIXELS_TO_UNITS", DEFAULT_CONFIG.PIXELS_TO_UNITS)
+            # Registrar observador para actualizar la interfaz cuando cambie la configuración
+            self.config_service.add_observer(self.on_config_change)
+        else:
+            initial_value = DEFAULT_CONFIG.PIXELS_TO_UNITS
+            
+        self.scale.set(initial_value)
         self.scale.pack(side="left")
         self.increment_btn = Button(control_frame, text="+", command=self.on_increment)
         self.increment_btn.pack(side="left")
@@ -51,6 +63,12 @@ class TkinterViewer:
         else:
             self.logger.exception("Excepción no controlada en Tkinter", exc_info=(exc, val, tb))
             self.stop()
+            
+    def on_config_change(self, key, old_value, new_value):
+        "Callback llamado cuando cambia un valor en el servicio de configuración."
+        if key == "PIXELS_TO_UNITS" and self.scale.get() != new_value:
+            self.logger.debug(f"Actualizando UI por cambio en configuración: {key}={new_value}")
+            self.scale.set(new_value)
 
     def update_frame(self):
         "Actualiza el frame de la cámara en la interfaz gráfica."
@@ -74,8 +92,15 @@ class TkinterViewer:
     def on_scale_change(self, value):
         "Callback para actualizar el parámetro PIXELS_TO_UNITS en tiempo real."
         try:
-            DEFAULT_CONFIG.PIXELS_TO_UNITS = float(value)
-            self.logger.info(f"Updated PIXELS_TO_UNITS to {DEFAULT_CONFIG.PIXELS_TO_UNITS}")
+            value_float = float(value)
+            
+            # Actualizar mediante el servicio de configuración si está disponible
+            if self.config_service:
+                self.config_service.set("PIXELS_TO_UNITS", value_float)
+            else:
+                # Mantener compatibilidad con el código antiguo
+                DEFAULT_CONFIG.PIXELS_TO_UNITS = value_float
+                self.logger.info(f"Updated PIXELS_TO_UNITS to {DEFAULT_CONFIG.PIXELS_TO_UNITS}")
         except ValueError:
             self.logger.error("Invalid value for PIXELS_TO_UNITS")
 
@@ -104,6 +129,9 @@ class TkinterViewer:
                 self.root.mainloop()
             finally:
                 self.logger.info("Camera released successfully via CameraService.")
+                # Eliminar observador al cerrar la aplicación
+                if self.config_service:
+                    self.config_service.remove_observer(self.on_config_change)
 
     def stop(self):
         " Detiene la interfaz gráfica y libera los recursos de la cámara."
@@ -117,6 +145,11 @@ class TkinterViewer:
                     self.logger.info("Camera released in stop().")
                 except RuntimeError:
                     self.logger.exception("RuntimeError occurred while releasing camera in stop()")
+        
+        # Eliminar observador al cerrar la aplicación
+        if self.config_service:
+            self.config_service.remove_observer(self.on_config_change)
+            
         self.root.quit()
         try:
             self.root.destroy()

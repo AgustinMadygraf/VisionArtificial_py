@@ -2,16 +2,40 @@
 Path: src/services/frame_processor.py
 """
 import cv2
+from typing import Optional, Dict, Any
 from src.config import DEFAULT_CONFIG
+from src.services.configuration_service import ConfigurationService
 
 class FrameProcessor:
     "Clase para procesar los marcos de video y agregar reglas de referencia."
+    
+    _config_service = None
+    
+    @classmethod
+    def set_config_service(cls, config_service: ConfigurationService) -> None:
+        """
+        Establece el servicio de configuración para el procesador de frames.
+        
+        Args:
+            config_service: Servicio de configuración a utilizar.
+        """
+        cls._config_service = config_service
 
     @staticmethod
-    def process(frame, config=None):
+    def process(frame, config_override=None):
         "Procesa el marco de video para agregar líneas de referencia y una regla horizontal."
-        if config is None:
+        # Usar configuración proporcionada, o el servicio de configuración, o DEFAULT_CONFIG como fallback
+        if config_override is not None:
+            config = config_override
+        elif FrameProcessor._config_service is not None:
+            # Crear un objeto tipo AppConfig con los valores del servicio de configuración
+            config = type('DynamicConfig', (), {})
+            config.PIXELS_TO_UNITS = FrameProcessor._config_service.get(
+                "PIXELS_TO_UNITS", DEFAULT_CONFIG.PIXELS_TO_UNITS
+            )
+        else:
             config = DEFAULT_CONFIG
+            
         height, width, _ = frame.shape
 
         # Dibujar línea vertical en el centro
