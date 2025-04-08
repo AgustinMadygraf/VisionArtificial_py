@@ -6,6 +6,7 @@ La fábrica de la aplicación se encarga de:
  - Registrar blueprints que encapsulan rutas y lógicas de cada módulo.
    * main_routes: Maneja las rutas principales.
    * video_routes: Gestiona rutas relacionadas con funcionalidades de video.
+   * config_routes: Gestiona rutas relacionadas con la configuración del sistema.
  
 Esta organización permite una separación clara entre la lógica de negocio y la presentación.
 """
@@ -13,6 +14,7 @@ Esta organización permite una separación clara entre la lógica de negocio y l
 from flask import Flask
 from src.routes.main_routes import main_bp
 from src.routes.video_routes import video_bp
+from src.routes.config_routes import config_bp
 from src.config import AppConfig
 from src.utils.logging.simple_logger import LoggerService
 
@@ -29,4 +31,6 @@ class AppFactory:
         self.logger.info("Blueprint 'main_routes' registrado correctamente.")
         app.register_blueprint(video_bp)
         self.logger.info("Blueprint 'video_routes' registrado correctamente.")
+        app.register_blueprint(config_bp)
+        self.logger.info("Blueprint 'config_routes' registrado correctamente.")
         return app
