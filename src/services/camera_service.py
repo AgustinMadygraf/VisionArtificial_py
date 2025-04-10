@@ -50,5 +50,8 @@ def generate_frames(process=False):
     finally:
         print("Liberando la cámara.")
         camera.release()
-        cv2.destroyAllWindows() # pylint: disable=E1101
+        try:
+            cv2.destroyAllWindows()  # pylint: disable=E1101
+        except cv2.error as e: # pylint: disable=catching-non-exception
+            logger.warning(f"Error al cerrar ventanas: {e}")
         logger.info("Cámara liberada y ventanas cerradas.")

@@ -18,12 +18,14 @@
         <div id="container" class="row mt-4">
             <div class="video-section col-md-6 mb-3">
                 <h2>Original</h2>
-                <!-- <img id="vid" src="{{ url_for('video.video_original') }}" class="w-100" alt="Video Feed"> -->
+                <a href="/video_original" target="_blank" class="btn btn-primary">Abrir Video Original</a>
+                <img id="vid" src="{{ url_for('video.video_original') }}" class="w-100" alt="Video Feed">
             </div>
             <div class="image-section col-md-6 mb-3">
                 <h2>Procesada</h2>
+                <a href="/video_process" target="_blank" class="btn btn-primary">Abrir Video Procesado</a>
                 <div id="image-canvas" class="border">
-                    <!-- <img src="{{ url_for('video.video_process') }}" class="w-100"> -->
+                    <img src="{{ url_for('video.video_process') }}" class="w-100">
                 </div>
             </div>
         </div>

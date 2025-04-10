@@ -3,7 +3,7 @@ Path: src/routes/video.py
 """
 
 from flask import Blueprint, Response
-from src.services.camera_service import generate_frames  # Se importa el servicio de cámara
+from src.services.camera_service import generate_frames
 from src.utils.logging.simple_logger import LoggerService
 
 logger = LoggerService()
