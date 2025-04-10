@@ -5,12 +5,25 @@ Path: src/main.py
 import cv2
 from flask import Flask, Response, render_template
 import jinja2
+from src.config.default import DefaultConfig
+from src.routes.home import home_bp
+from src.routes.video import video_bp
+
+def create_app(config_class=DefaultConfig):
+    """Factory function to create and configure the Flask application."""
+    app = Flask(__name__, template_folder="../templates")
+    app.config.from_object(config_class)
+
+    app.register_blueprint(home_bp)
+    app.register_blueprint(video_bp)
+
+    return app
 
 class MainApp:
     "Clase principal de la aplicación Flask."
     def __init__(self, logger):
         self.logger = logger
-        self.app = Flask(__name__, template_folder="../templates")
+        self.app = create_app()
         self.setup_routes()
 
     def setup_routes(self):
@@ -47,7 +60,7 @@ class MainApp:
 
     def generate_frames(self, process=False):
         """Establece la captura de video y procesa los frames si es necesario."""
-        camera_index = 0  # Cambia este índice si tienes múltiples cámaras
+        camera_index = 0
         self.logger.info(f"Intentando acceder a la cámara con índice {camera_index}.")
         camera = cv2.VideoCapture(camera_index)  # pylint: disable=no-member
         if not camera.isOpened():

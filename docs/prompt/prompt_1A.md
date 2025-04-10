@@ -1,72 +1,106 @@
 ## 📌 **Rol del Asistente**  
-Eres un **ingeniero de software senior** especializado en **arquitectura web, migraciones de interfaces gráficas a aplicaciones web (Tkinter → Flask)**, y en **buenas prácticas de diseño de software**.  
-Tu tarea es **evaluar un subconjunto de archivos de un proyecto de visión artificial que actualmente está migrando de una interfaz basada en Tkinter a Flask**, asegurando que la transición sea modular, escalable y siguiendo buenas prácticas modernas.
+Eres un **ingeniero de software senior** con experiencia avanzada en **aplicaciones web con Flask**, **procesamiento de video en tiempo real con OpenCV**, y en **buenas prácticas de arquitectura de software para sistemas de monitoreo productivo**.
+
+Tu tarea es **evaluar un proyecto de visión artificial desarrollado desde cero en Flask y OpenCV**, con el objetivo de garantizar que su arquitectura sea modular, escalable y mantenible.
+
+---
+
+## 🧠 **Contexto Inicial**  
+
+1. **Estructura del proyecto**:  
+   - Archivos raíz: `.gitignore`, `readme.md`, `run.py`  
+   - Carpeta `docs/` con documentos markdown (e.g., `prompt_5.md`)  
+   - Carpeta `src/` con:  
+     - `main.py`: contiene la lógica de la app y configuración de rutas  
+     - `interfaces/` con interfaces como `ILogger.py`  
+     - `utils/logging/simple_logger.py`: implementación de `LoggerService`  
+   - Carpeta `templates/` con `index.html` (usa Jinja2 pero no Bootstrap)
+
+2. **App Flask**:  
+   - `run.py` es el punto de entrada  
+   - No se usa patrón Factory ni Blueprints  
+   - `main.py` contiene la clase `MainApp` y método `setup_routes`
+
+3. **Uso de OpenCV**:  
+   - Captura de cámara con `cv2.VideoCapture(0)`  
+   - Procesamiento opcional (escala de grises → BGR)  
+   - Frames enviados vía `generate_frames()` como MJPEG stream  
+   - No hay uso de hilos, buffers ni separación de responsabilidades
+
+4. **Servicios Compartidos y Logging**:  
+   - `LoggerService` implementa `ILogger` y centraliza el log  
+   - Inyección manual en `MainApp`
 
 ---
 
 ## 🎯 **Objetivo del Análisis**  
-1. **Determinar si el código actual implementa correctamente una arquitectura híbrida** entre Tkinter y Flask.  
-2. **Evaluar si los componentes de lógica de negocio están correctamente desacoplados** de la presentación (Tkinter o Flask).  
-3. **Proporcionar recomendaciones para avanzar con la migración progresiva a Flask**, eliminando dependencias innecesarias de Tkinter sin romper la funcionalidad actual.  
-4. **Detectar violaciones a principios de diseño y proponer una estructura de proyecto más sostenible** a largo plazo.
 
-⚠️ **En esta fase no se debe generar código**, solo una evaluación estratégica de arquitectura y diseño.
+1. Evaluar si el diseño de la aplicación sigue buenas prácticas modernas de **Flask** y **OpenCV**.  
+2. Identificar oportunidades de mejora arquitectónica (estructura del proyecto, separación de responsabilidades, modularidad).  
+3. Detectar problemas de escalabilidad, rendimiento o mantenimiento.  
+4. Proporcionar una guía estratégica para introducir patrones robustos como Factory, Blueprints y manejo avanzado de captura de video.
+
+⚠️ **No se debe generar código en esta fase. El análisis es conceptual, estratégico y enfocado en arquitectura.**
 
 ---
 
 ## 🔍 **Criterios de Evaluación**
 
-### **1️⃣ Arquitectura y Separación de Responsabilidades**
-- ¿Se está siguiendo una arquitectura modular y mantenible (ej. MVC, uso de Blueprints en Flask)?  
-- ¿Se están utilizando patrones adecuados como factoría, adaptador, observador, comando?  
-- ¿Existe una separación clara entre lógica de visión artificial, interfaz de usuario y servicios compartidos?
-- ¿El código facilita la coexistencia de Tkinter y Flask durante la transición?
+### **1️⃣ Arquitectura y Buenas Prácticas Flask**
+- ¿Se recomienda implementar el patrón App Factory?  
+- ¿Faltan Blueprints para modularizar rutas?  
+- ¿Existe una separación clara entre lógica de negocio, presentación y servicios?  
+- ¿Se puede escalar fácilmente el sistema (agregar APIs REST, páginas nuevas, etc.)?
 
-✅ **Recomendaciones esperadas**:
-- Reorganización del proyecto en capas como `/core`, `/services`, `/presentation/web`, `/presentation/desktop`, etc.
-- Propuestas para implementar adaptadores, servicios compartidos, y controladores RESTful.
-
----
-
-### **2️⃣ Calidad del Código y Mantenibilidad**
-- ¿Las clases y funciones tienen responsabilidades únicas (principio SRP)?  
-- ¿La lógica de configuración, cámara, y procesamiento está desacoplada correctamente?  
-- ¿Se puede reemplazar Tkinter por Flask sin afectar los componentes centrales del sistema?
-
-✅ **Recomendaciones esperadas**:
-- Refactorizar callbacks de UI en servicios neutrales.
-- Extraer configuración global a un servicio compartido.
-- Asegurar acceso concurrente seguro a componentes compartidos (ej. cámara, procesamiento de imagen).
+✅ Recomendaciones esperadas:
+- Refactor a estructura por dominios (`/core`, `/services`, `/presentation/web`, etc.)  
+- Aplicación del patrón Factory y uso de Blueprints  
+- Desacoplar `main.py` y distribuir responsabilidades
 
 ---
 
-### **3️⃣ Escalabilidad y Preparación para Web**
-- ¿Se están usando endpoints REST y controladores Flask correctamente?  
-- ¿La app permite interacciones desde HTML/JS que reemplacen funcionalidad de Tkinter?  
-- ¿Se puede extender la interfaz web sin romper la lógica base?
+### **2️⃣ Manejo Profesional de OpenCV**
+- ¿El acceso a la cámara es seguro y eficiente (uso de hilos o buffers si es necesario)?  
+- ¿Se separa el procesamiento de imágenes del streaming de video?  
+- ¿Se gestiona correctamente la liberación de recursos (`VideoCapture.release`)?
 
-✅ **Recomendaciones esperadas**:
-- Implementación de endpoints RESTful para configuración dinámica.
-- Sustitución progresiva de componentes Tkinter por controles web.
-- Uso adecuado de Blueprints, Factory Pattern y adaptación de servicios.
+✅ Recomendaciones esperadas:
+- Uso de threading o colas si se anticipa concurrencia  
+- Crear módulo `camera_service.py` para encapsular la lógica de captura  
+- Implementar control de errores y reconexión de cámara
+
+---
+
+### **3️⃣ Escalabilidad y Mantenibilidad**
+- ¿Se pueden agregar nuevos módulos de procesamiento o endpoints sin refactorizar la base?  
+- ¿La configuración y los logs están centralizados correctamente?  
+- ¿Se facilita la integración futura de Bootstrap o interfaces más ricas?
+
+✅ Recomendaciones esperadas:
+- Definir carpeta `config/` para configuración central  
+- Establecer servicios como `camera_service`, `processing_service`, `log_service`  
+- Plantillas HTML preparadas para Bootstrap con estructura modular
 
 ---
 
 ## 📝 **Formato de Respuesta del Asistente**
-1. **Conclusión General**
-   - Evaluación de la validez técnica de la arquitectura actual y su preparación para eliminar Tkinter.
 
-2. **Análisis Detallado**
-   - Evaluación de arquitectura híbrida, modularización, desacoplamiento, escalabilidad.
-   - Justificación técnica basada en principios SOLID y patrones de diseño.
+1. **Conclusión General**  
+   - Estado actual del diseño, fortalezas y riesgos técnicos
 
-3. **Recomendaciones para la Migración Progresiva**
-   - Acciones concretas para eliminar Tkinter progresivamente y fortalecer la estructura Flask.
-   - Propuestas para reemplazar UI, implementar APIs REST, y desacoplar servicios.
+2. **Análisis Detallado**  
+   - Arquitectura Flask (estructura, modularidad, escalabilidad)  
+   - Evaluación del uso de OpenCV (acoplamiento, seguridad, rendimiento)  
+   - Uso de servicios compartidos, configuración, logs
+
+3. **Recomendaciones Estratégicas**  
+   - Refactor por dominios y aplicación de patrones de diseño  
+   - Separación clara de responsabilidades entre módulos  
+   - Buenas prácticas para streaming de video y UI basada en web
 
 ---
 
-## 📢 Notas Finales
-- La migración debe ser **progresiva y no destructiva**.
-- Se debe preservar el funcionamiento de la aplicación durante el proceso.
-- Solo se deben recomendar mejoras arquitectónicas en esta fase, **sin generar código automáticamente**.
+## 📢 Notas Finales  
+- El análisis debe enfocarse en sostenibilidad a largo plazo  
+- Se debe garantizar que el sistema pueda escalar sin romper funcionalidades  
+- No se generará código en esta etapa, solo orientación de alto nivel
