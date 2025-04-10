@@ -77,15 +77,26 @@ class ConfigurationService(IConfigurationService):
         self._logger.info(f"Configuración actualizada: {key} = {value} (antes: {old_value})")
         
         # Notificar a los observadores
-        for observer in self._observers:
-            try:
-                observer(key, old_value, value)
-            except Exception as e:
-                self._logger.error(f"Error al notificar observador: {e}")
+        self.notify_observers(key, value)
         
         # Sincronizar con FrameProcessor si es necesario
         if key == "PIXELS_TO_UNITS" and FrameProcessor._config_service is self:
             FrameProcessor._config_service = self
+    
+    def notify_observers(self, key: str, new_value: Any) -> None:
+        """
+        Notifica a los observadores sobre un cambio en la configuración.
+
+        Args:
+            key: Clave del parámetro de configuración.
+            new_value: Nuevo valor del parámetro.
+        """
+        old_value = self._config.get(key)
+        for observer in self._observers:
+            try:
+                observer.on_config_change(key, old_value, new_value)
+            except Exception as e:
+                self._logger.error(f"Error al notificar observador: {e}")
     
     def get_all(self) -> Dict[str, Any]:
         """

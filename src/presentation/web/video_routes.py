@@ -3,7 +3,7 @@ Path: src/routes/video_routes.py
 """
 # Suppress type-checking errors for cv2 members
 import cv2  # type: ignore
-from flask import Blueprint, Response
+from flask import Blueprint, Response, jsonify
 from src.core.shared_service import SharedService
 from src.utils.logging.simple_logger import LoggerService
 
@@ -13,7 +13,7 @@ def get_logger():
     "Función para obtener el logger."
     return getattr(video_bp, 'logger', None) or LoggerService()
 
-shared_service = SharedService(get_logger())  # Instanciar SharedService
+shared_service = SharedService(get_logger())  # SharedService is already instantiated aquí
 
 def generate_frames(process_function=None):
     "Genera frames, aplicando la función de procesamiento si se proporciona."
@@ -41,9 +41,21 @@ def generate_frames(process_function=None):
 @video_bp.route("/video_feed")
 def video_feed():
     "Ruta para el flujo de video sin procesar."
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    try:
+        return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    except Exception as e:
+        logger = get_logger()
+        logger.exception("Error en el endpoint /video_feed")
+        return jsonify({"error": "Error al generar el flujo de video"}), 500
 
 @video_bp.route("/processed_feed")
 def processed_feed():
     "Ruta para el flujo de video procesado."
     return Response(generate_frames(shared_service.get_frame_processor().process), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@video_bp.errorhandler(Exception)
+def handle_exception(e):
+    "Manejo centralizado de excepciones en los endpoints de video."
+    logger = get_logger()
+    logger.exception("Error no controlado en un endpoint de video")
+    return jsonify({"error": "Ocurrió un error interno en el servidor"}), 500

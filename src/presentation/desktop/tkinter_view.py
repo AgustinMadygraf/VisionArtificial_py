@@ -7,13 +7,19 @@ from tkinter import Tk, Label, Scale, HORIZONTAL, Button
 # Suppress type-checking errors for cv2 members
 import cv2  # type: ignore
 from PIL import Image, ImageTk
-from src.core.camera_service import CameraService
 from src.config import DEFAULT_CONFIG
-from src.core.frame_processor import FrameProcessor
 from src.adapters.tkinter_adapter import TkinterAdapter
 from src.core.shared_service import SharedService
 from src.presentation.desktop.camera_controller import CameraController
 from src.presentation.desktop.config_controller import ConfigController
+
+class ConfigChangeObserver:
+    def __init__(self, callback):
+        self.callback = callback
+
+    def on_config_change(self, key, old_value, new_value):
+        """Callback method to handle configuration changes."""
+        self.callback(key, old_value, new_value)
 
 class TkinterViewer:
     "Clase para crear una interfaz gráfica con Tkinter que muestra la vista de la cámara."
@@ -52,10 +58,9 @@ class TkinterViewer:
         self.scale.pack(side="left")
         self.increment_btn = Button(control_frame, text="+", command=self.on_increment)
         self.increment_btn.pack(side="left")
-        self.camera_controller = CameraController(self.shared_service)  # Usar CameraController
-        self.camera_controller.initialize_camera()
-        self.config_controller = ConfigController(config_service)  # Usar ConfigController
-        self.config_controller.add_observer(self.on_config_change)
+        self.camera_controller = CameraController(self.shared_service)  # Delegar a CameraController
+        self.config_controller = ConfigController(config_service)  # Delegar a ConfigController
+        self.config_controller.add_observer(ConfigChangeObserver(self.on_config_change))
         self.update_frame()
 
     def report_callback_exception(self, exc, val, tb):
@@ -79,10 +84,10 @@ class TkinterViewer:
     def update_frame(self):
         "Actualiza el frame de la cámara en la interfaz gráfica."
         try:
-            frame = self.camera_controller.get_frame()  # Obtener frame desde CameraController
+            frame = self.camera_controller.get_frame()  # Delegar a CameraController
             if frame is not None:
                 frame = self.shared_service.get_frame_processor().process(frame)
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # type: ignore
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # type: ignore[attr-defined, no-member]
                 im = Image.fromarray(frame)
                 imgtk = ImageTk.PhotoImage(image=im)
                 self.label.imgtk = imgtk
@@ -136,8 +141,8 @@ class TkinterViewer:
 
     def stop(self):
         "Detiene la interfaz gráfica y libera los recursos de la cámara."
-        self.camera_controller.release_camera()  # Liberar cámara desde CameraController
-        self.config_controller.remove_observer(self.on_config_change)
+        self.camera_controller.shutdown()  # Delegar a CameraController
+        self.shared_service.shutdown()  # Usar SharedService
         self.root.quit()
         try:
             self.root.destroy()

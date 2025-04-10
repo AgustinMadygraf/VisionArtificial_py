@@ -13,11 +13,18 @@ def get_logger():
     "Función para obtener el logger."
     return getattr(config_bp, 'logger', None) or LoggerService()
 
-shared_service = SharedService(get_logger())  # Instanciar SharedService
+shared_service = SharedService(get_logger())  # SharedService is already instantiated here
 
 def get_config_service():
     "Función para obtener el servicio de configuración."
     return getattr(config_bp, 'config_service', None) or ConfigurationService(get_logger())
+
+@config_bp.errorhandler(Exception)
+def handle_exception(e):
+    "Manejo centralizado de excepciones en los endpoints de configuración."
+    logger = get_logger()
+    logger.exception("Error no controlado en un endpoint de configuración")
+    return jsonify({"error": "Ocurrió un error interno en el servidor"}), 500
 
 @config_bp.route("", methods=["GET"])
 def get_all_config():
@@ -47,20 +54,26 @@ def update_config():
     "Endpoint para actualizar uno o varios valores de configuración."
     config_service = get_config_service()
     logger = get_logger()
-    
+
     if not request.is_json:
         return jsonify({"error": "La solicitud debe ser JSON"}), 400
-    
+
     data = request.get_json()
-    
+
     if not isinstance(data, dict):
         return jsonify({"error": "El formato debe ser un objeto JSON"}), 400
-    
+
+    invalid_keys = [key for key in data if not isinstance(key, str)]
+    if invalid_keys:
+        return jsonify({"error": f"Claves inválidas: {invalid_keys}"}), 400
+
     logger.info(f"Actualizando configuración: {data}")
-    
+
     for key, value in data.items():
+        if not isinstance(value, (int, float, str, bool, list, dict)):
+            return jsonify({"error": f"Valor inválido para la clave '{key}': {value}"}), 400
         config_service.set(key, value)
-    
+
     return jsonify({"message": "Configuración actualizada correctamente"})
 
 @config_bp.route("/<key>", methods=["POST"])

@@ -31,3 +31,7 @@ class CameraController:
             if success:
                 return frame
         return None
+
+    def shutdown(self):
+        """Releases the camera resources."""
+        self.release_camera()
