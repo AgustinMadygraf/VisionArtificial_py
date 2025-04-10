@@ -3,15 +3,14 @@ Path: src/services/frame_processor.py
 """
 import cv2
 from typing import Optional, Dict, Any
-from src.core.configuration_service import ConfigurationService
 
 class FrameProcessor:
     "Clase para procesar los marcos de video y agregar reglas de referencia."
     
-    _config_service = None
+    _config_service: Optional[object] = None  # Cambiar el tipo a un objeto genérico
     
     @classmethod
-    def set_config_service(cls, config_service: ConfigurationService) -> None:
+    def set_config_service(cls, config_service) -> None:
         """
         Establece el servicio de configuración para el procesador de frames.
         

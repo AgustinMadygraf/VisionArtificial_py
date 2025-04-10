@@ -5,16 +5,19 @@ Path: src/routes/config_routes.py
 from flask import Blueprint, request, jsonify
 from src.core.configuration_service import ConfigurationService
 from src.utils.logging.simple_logger import LoggerService
+from src.core.shared_service import SharedService
 
 config_bp = Blueprint('config', __name__, url_prefix='/config')
-
-def get_config_service():
-    "Función para obtener el servicio de configuración."
-    return getattr(config_bp, 'config_service', None) or ConfigurationService(get_logger())
 
 def get_logger():
     "Función para obtener el logger."
     return getattr(config_bp, 'logger', None) or LoggerService()
+
+shared_service = SharedService(get_logger())  # Instanciar SharedService
+
+def get_config_service():
+    "Función para obtener el servicio de configuración."
+    return getattr(config_bp, 'config_service', None) or ConfigurationService(get_logger())
 
 @config_bp.route("", methods=["GET"])
 def get_all_config():
@@ -128,3 +131,22 @@ def import_config():
         return jsonify({"message": "Configuración importada correctamente"})
     else:
         return jsonify({"error": "Error al importar la configuración"}), 500
+
+@config_bp.route("/update", methods=["POST"])
+def update_dynamic_config():
+    """
+    Endpoint para actualizar la configuración desde controles dinámicos.
+    """
+    logger = get_logger()
+    config_service = get_config_service()
+
+    if not request.is_json:
+        return jsonify({"error": "La solicitud debe ser JSON"}), 400
+
+    data = request.get_json()
+    logger.info(f"Actualizando configuración dinámica: {data}")
+
+    for key, value in data.items():
+        config_service.set(key, value)
+
+    return jsonify({"message": "Configuración dinámica actualizada correctamente"})

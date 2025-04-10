@@ -10,6 +10,7 @@ from src.interfaces.IConfigurationService import IConfigurationService
 from src.interfaces.ILogger import ILogger
 from src.utils.logging.simple_logger import LoggerService
 from src.config import DEFAULT_CONFIG
+from src.core.frame_processor import FrameProcessor  # Importar FrameProcessor
 
 class ConfigurationService(IConfigurationService):
     """
@@ -81,6 +82,10 @@ class ConfigurationService(IConfigurationService):
                 observer(key, old_value, value)
             except Exception as e:
                 self._logger.error(f"Error al notificar observador: {e}")
+        
+        # Sincronizar con FrameProcessor si es necesario
+        if key == "PIXELS_TO_UNITS" and FrameProcessor._config_service is self:
+            FrameProcessor._config_service = self
     
     def get_all(self) -> Dict[str, Any]:
         """

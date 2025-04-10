@@ -11,12 +11,16 @@ from src.core.camera_service import CameraService
 from src.config import DEFAULT_CONFIG
 from src.core.frame_processor import FrameProcessor
 from src.adapters.tkinter_adapter import TkinterAdapter
+from src.core.shared_service import SharedService
+from src.presentation.desktop.camera_controller import CameraController
+from src.presentation.desktop.config_controller import ConfigController
 
 class TkinterViewer:
-    " Clase para crear una interfaz gráfica con Tkinter que muestra la vista de la cámara."
+    "Clase para crear una interfaz gráfica con Tkinter que muestra la vista de la cámara."
     def __init__(self, logger, config_service=None):
         self.logger = logger
         self.config_service = config_service
+        self.shared_service = SharedService(logger)  # Usar SharedService
         self.adapter = TkinterAdapter(logger)
         self.root = Tk()
         self.root.title("Vista Procesada")
@@ -41,8 +45,6 @@ class TkinterViewer:
         # o usar DEFAULT_CONFIG como respaldo
         if self.config_service:
             initial_value = self.config_service.get("PIXELS_TO_UNITS", DEFAULT_CONFIG.PIXELS_TO_UNITS)
-            # Registrar observador para actualizar la interfaz cuando cambie la configuración
-            self.config_service.add_observer(self.on_config_change)
         else:
             initial_value = DEFAULT_CONFIG.PIXELS_TO_UNITS
             
@@ -50,8 +52,10 @@ class TkinterViewer:
         self.scale.pack(side="left")
         self.increment_btn = Button(control_frame, text="+", command=self.on_increment)
         self.increment_btn.pack(side="left")
-        self.cam = None
-        self.cam_service = None
+        self.camera_controller = CameraController(self.shared_service)  # Usar CameraController
+        self.camera_controller.initialize_camera()
+        self.config_controller = ConfigController(config_service)  # Usar ConfigController
+        self.config_controller.add_observer(self.on_config_change)
         self.update_frame()
 
     def report_callback_exception(self, exc, val, tb):
@@ -75,15 +79,14 @@ class TkinterViewer:
     def update_frame(self):
         "Actualiza el frame de la cámara en la interfaz gráfica."
         try:
-            if self.cam is not None:
-                success, frame = self.cam.cap.read()
-                if success:
-                    frame = FrameProcessor.process(frame)  # Centraliza el procesamiento en FrameProcessor
-                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # type: ignore
-                    im = Image.fromarray(frame)
-                    imgtk = ImageTk.PhotoImage(image=im)
-                    self.label.imgtk = imgtk
-                    self.label.configure(image=imgtk)
+            frame = self.camera_controller.get_frame()  # Obtener frame desde CameraController
+            if frame is not None:
+                frame = self.shared_service.get_frame_processor().process(frame)
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # type: ignore
+                im = Image.fromarray(frame)
+                imgtk = ImageTk.PhotoImage(image=im)
+                self.label.imgtk = imgtk
+                self.label.configure(image=imgtk)
             self.root.after(30, self.update_frame)
         except KeyboardInterrupt:
             self.root.quit()
@@ -124,34 +127,17 @@ class TkinterViewer:
 
     def run(self):
         "Inicia la interfaz gráfica de Tkinter y el servicio de cámara."
-        self.cam_service = CameraService(self.logger)
-        with self.cam_service as cam:
-            self.cam = cam
-            try:
-                self.root.mainloop()
-            finally:
-                self.logger.info("Camera released successfully via CameraService.")
-                # Eliminar observador al cerrar la aplicación
-                if self.config_service:
-                    self.config_service.remove_observer(self.on_config_change)
+        self.shared_service.initialize()  # Inicializar servicios compartidos
+        try:
+            self.root.mainloop()
+        finally:
+            self.logger.info("Cerrando servicios compartidos.")
+            self.shared_service.shutdown()  # Finalizar servicios compartidos
 
     def stop(self):
-        " Detiene la interfaz gráfica y libera los recursos de la cámara."
-        if hasattr(self, 'cam_service'):
-            self.cam_service.__exit__(None, None, None)
-            self.logger.info("Camera released in stop() via CameraService.")
-        else:
-            if self.cam is not None:
-                try:
-                    self.cam.cap.release()
-                    self.logger.info("Camera released in stop().")
-                except RuntimeError:
-                    self.logger.exception("RuntimeError occurred while releasing camera in stop()")
-        
-        # Eliminar observador al cerrar la aplicación
-        if self.config_service:
-            self.config_service.remove_observer(self.on_config_change)
-            
+        "Detiene la interfaz gráfica y libera los recursos de la cámara."
+        self.camera_controller.release_camera()  # Liberar cámara desde CameraController
+        self.config_controller.remove_observer(self.on_config_change)
         self.root.quit()
         try:
             self.root.destroy()
