@@ -3,7 +3,7 @@ Path: src/routes/config_routes.py
 """
 
 from flask import Blueprint, request, jsonify
-from src.services.configuration_service import ConfigurationService
+from src.core.configuration_service import ConfigurationService
 from src.utils.logging.simple_logger import LoggerService
 
 config_bp = Blueprint('config', __name__, url_prefix='/config')

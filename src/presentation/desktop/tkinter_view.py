@@ -4,18 +4,20 @@ Path: src/tkinter_view.py
 
 import tkinter
 from tkinter import Tk, Label, Scale, HORIZONTAL, Button
-import cv2
+# Suppress type-checking errors for cv2 members
+import cv2  # type: ignore
 from PIL import Image, ImageTk
-from src.services.frame_processor import FrameProcessor
-from src.services.camera_service import CameraService
-from src.interfaces.IConfigurationService import IConfigurationService
+from src.core.camera_service import CameraService
 from src.config import DEFAULT_CONFIG
+from src.core.frame_processor import FrameProcessor
+from src.adapters.tkinter_adapter import TkinterAdapter
 
 class TkinterViewer:
     " Clase para crear una interfaz gráfica con Tkinter que muestra la vista de la cámara."
     def __init__(self, logger, config_service=None):
         self.logger = logger
         self.config_service = config_service
+        self.adapter = TkinterAdapter(logger)
         self.root = Tk()
         self.root.title("Vista Procesada")
         self.root.report_callback_exception = self.report_callback_exception
@@ -64,7 +66,7 @@ class TkinterViewer:
             self.logger.exception("Excepción no controlada en Tkinter", exc_info=(exc, val, tb))
             self.stop()
             
-    def on_config_change(self, key, old_value, new_value):
+    def on_config_change(self, key, _, new_value):
         "Callback llamado cuando cambia un valor en el servicio de configuración."
         if key == "PIXELS_TO_UNITS" and self.scale.get() != new_value:
             self.logger.debug(f"Actualizando UI por cambio en configuración: {key}={new_value}")
@@ -76,8 +78,8 @@ class TkinterViewer:
             if self.cam is not None:
                 success, frame = self.cam.cap.read()
                 if success:
-                    frame = FrameProcessor.process(frame)
-                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    frame = FrameProcessor.process(frame)  # Centraliza el procesamiento en FrameProcessor
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # type: ignore
                     im = Image.fromarray(frame)
                     imgtk = ImageTk.PhotoImage(image=im)
                     self.label.imgtk = imgtk

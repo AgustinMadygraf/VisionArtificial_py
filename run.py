@@ -5,6 +5,10 @@ Este módulo invoca main() de src/main.py, que orquesta la inicialización
 y ejecución de los componentes.
 """
 
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), 'src')))
+
 from src.coordinator import ApplicationCoordinator
 from src.utils.logging.simple_logger import LoggerService
 

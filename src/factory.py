@@ -12,11 +12,13 @@ Esta organización permite una separación clara entre la lógica de negocio y l
 """
 
 from flask import Flask
-from src.routes.main_routes import main_bp
-from src.routes.video_routes import video_bp
-from src.routes.config_routes import config_bp
+from src.presentation.web.main_routes import main_bp
+from src.presentation.web.video_routes import video_bp
+from src.presentation.web.config_routes import config_bp
 from src.config import AppConfig
 from src.utils.logging.simple_logger import LoggerService
+from src.core.configuration_service import ConfigurationService
+from src.core.frame_processor import FrameProcessor
 
 class AppFactory:
     " Clase responsable de crear la aplicación Flask."

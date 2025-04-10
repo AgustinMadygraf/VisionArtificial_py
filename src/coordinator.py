@@ -6,9 +6,9 @@ import threading
 import requests
 from src.factory import AppFactory
 from src.config import AppConfig
-from src.tkinter_view import TkinterViewer
-from src.services.configuration_service import ConfigurationService
-from src.services.frame_processor import FrameProcessor
+from src.presentation.desktop.tkinter_view import TkinterViewer
+from src.core.configuration_service import ConfigurationService
+from src.core.frame_processor import FrameProcessor
 
 class ApplicationCoordinator:
     "Clase coordinadora que orquesta la inicialización y ejecución de la aplicación."

@@ -3,8 +3,7 @@ Path: src/services/frame_processor.py
 """
 import cv2
 from typing import Optional, Dict, Any
-from src.config import DEFAULT_CONFIG
-from src.services.configuration_service import ConfigurationService
+from src.core.configuration_service import ConfigurationService
 
 class FrameProcessor:
     "Clase para procesar los marcos de video y agregar reglas de referencia."
@@ -22,20 +21,14 @@ class FrameProcessor:
         cls._config_service = config_service
 
     @staticmethod
-    def process(frame, config_override=None):
-        "Procesa el marco de video para agregar líneas de referencia y una regla horizontal."
-        # Usar configuración proporcionada, o el servicio de configuración, o DEFAULT_CONFIG como fallback
-        if config_override is not None:
-            config = config_override
-        elif FrameProcessor._config_service is not None:
-            # Crear un objeto tipo AppConfig con los valores del servicio de configuración
-            config = type('DynamicConfig', (), {})
-            config.PIXELS_TO_UNITS = FrameProcessor._config_service.get(
-                "PIXELS_TO_UNITS", DEFAULT_CONFIG.PIXELS_TO_UNITS
-            )
-        else:
-            config = DEFAULT_CONFIG
-            
+    def process(frame):
+        """Procesa el marco de video para agregar líneas de referencia y una regla horizontal."""
+        if FrameProcessor._config_service is None:
+            raise ValueError("ConfigurationService must be set before processing frames.")
+
+        # Obtener configuración dinámica del servicio
+        pixels_to_units = FrameProcessor._config_service.get("PIXELS_TO_UNITS")
+
         height, width, _ = frame.shape
 
         # Dibujar línea vertical en el centro
@@ -52,7 +45,7 @@ class FrameProcessor:
             cv2.line(frame, (x, height // 2 - tick_length // 2),
                            (x, height // 2 + tick_length // 2), (255, 0, 0), 1)
             # Convertir la posición en píxeles a la unidad deseada
-            unit_value = x * config.PIXELS_TO_UNITS
+            unit_value = x * pixels_to_units
             # Colocar el valor numérico de la posición con formato a un decimal
             cv2.putText(frame, f"{unit_value:.1f}", (x, height // 2 - tick_length),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.3, (255, 0, 0), 1, cv2.LINE_AA)
