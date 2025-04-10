@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Inicio</title>
+    <!-- Agregar referencia a la hoja de estilo -->
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
     <h1>¡Hola, mundo!</h1>
@@ -11,31 +13,13 @@
     <div>
         <h2>Video Original</h2>
         <a href="/video_original" target="_blank">Ver Video Original</a>
-<!--        <video id="videoOriginal" autoplay muted loop></video>-->
     </div>
     <div>
         <h2>Video Procesado</h2>
         <a href="/video_process" target="_blank">Ver Video Procesado</a>
-<!--        <video id="videoProcesado" autoplay muted loop></video>-->
     </div>
 
-    <script>
-        // Función para cargar el stream de video en un elemento <video>
-        function loadVideoStream(videoElementId, streamUrl) {
-            const videoElement = document.getElementById(videoElementId);
-            if (videoElement) {
-                videoElement.src = streamUrl;
-                videoElement.onerror = () => {
-                    console.error(`Error al cargar el stream desde ${streamUrl}`);
-                };
-            } else {
-                console.error(`Elemento de video con ID ${videoElementId} no encontrado.`);
-            }
-        }
-
-        // Cargar los streams en los elementos de video
-        loadVideoStream('videoOriginal', '/video_original');
-        loadVideoStream('videoProcesado', '/video_process');
-    </script>
+    <!-- Eliminar el script inline y referenciar el archivo externo -->
+    <script src="/static/js/scripts.js"></script>
 </body>
 </html>
