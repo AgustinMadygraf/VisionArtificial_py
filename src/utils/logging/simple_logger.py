@@ -69,3 +69,29 @@ class LoggerService(ILogger):
     def exception(self, msg: str, *args, **kwargs) -> None:
         "Registra un mensaje de excepción con información de la traza."
         self._logger.exception(msg, *args, stacklevel=2, **kwargs)
+
+class SharedLoggerService:
+    "Servicio de logging para monitorear servicios compartidos."
+
+    def __init__(self):
+        self.logger = logging.getLogger("SharedServicesLogger")
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+        self.logger.setLevel(logging.DEBUG)
+
+    def info(self, message):
+        self.logger.info(message)
+
+    def debug(self, message):
+        self.logger.debug(message)
+
+    def warning(self, message):
+        self.logger.warning(message)
+
+    def error(self, message):
+        self.logger.error(message)
+
+    def exception(self, message):
+        self.logger.exception(message)

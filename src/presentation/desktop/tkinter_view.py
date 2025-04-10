@@ -104,13 +104,11 @@ class TkinterViewer:
         try:
             value_float = float(value)
             
-            # Actualizar mediante el servicio de configuración si está disponible
+            # Actualizar exclusivamente mediante el servicio de configuración
             if self.config_service:
                 self.config_service.set("PIXELS_TO_UNITS", value_float)
             else:
-                # Mantener compatibilidad con el código antiguo
-                DEFAULT_CONFIG.PIXELS_TO_UNITS = value_float
-                self.logger.info(f"Updated PIXELS_TO_UNITS to {DEFAULT_CONFIG.PIXELS_TO_UNITS}")
+                self.logger.error("ConfigurationService no está disponible.")
         except ValueError:
             self.logger.error("Invalid value for PIXELS_TO_UNITS")
 
