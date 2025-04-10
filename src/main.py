@@ -9,7 +9,7 @@ from src.routes.video import video_bp
 
 def create_app(config_class=DefaultConfig):
     """Factory function to create and configure the Flask application."""
-    app = Flask(__name__, template_folder="../templates")
+    app = Flask(__name__, template_folder="../templates", static_folder="../static")
     app.config.from_object(config_class)
 
     app.register_blueprint(home_bp)
