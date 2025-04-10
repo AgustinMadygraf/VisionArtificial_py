@@ -46,28 +46,46 @@ class MainApp:
             )
 
     def generate_frames(self, process=False):
-        "Establece la captura de video y procesa los frames si es necesario."
-        camera = cv2.VideoCapture(0)  # pylint: disable=no-member
+        """Establece la captura de video y procesa los frames si es necesario."""
+        camera_index = 0  # Cambia este índice si tienes múltiples cámaras
+        self.logger.info(f"Intentando acceder a la cámara con índice {camera_index}.")
+        camera = cv2.VideoCapture(camera_index)  # pylint: disable=no-member
         if not camera.isOpened():
-            self.logger.error("No se pudo acceder a la cámara.")
+            self.logger.error(
+                f"No se pudo acceder a la cámara con índice {camera_index}. "
+                "Verifica si está conectada y no está en uso."
+            )
             return
 
         try:
             while True:
                 success, frame = camera.read()
                 if not success:
-                    self.logger.warning("No se pudo leer el frame de la cámara.")
+                    self.logger.warning(
+                        "No se pudo leer el frame de la cámara. "
+                        "Verifica la conexión."
+                    )
                     break
-                else:
-                    if process:
-                        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) # pylint: disable=no-member
-                        frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR) # pylint: disable=no-member
 
-                    _, buffer = cv2.imencode('.jpg', frame) # pylint: disable=no-member
+                if process:
+                    self.logger.debug("Procesando frame en escala de grises.")
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # pylint: disable=no-member
+                    frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)  # pylint: disable=no-member
+
+                    _, buffer = cv2.imencode('.jpg', frame)  # pylint: disable=no-member
                     frame = buffer.tobytes()
                     yield (b'--frame\r\n'
                            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                else:
+                    self.logger.debug("No se procesará el frame.")
+                    _, buffer = cv2.imencode('.jpg', frame)   # pylint: disable=no-member
+                    yield (b'--frame\r\n'
+                            b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+
+        except RuntimeError as e:
+            self.logger.error(f"Error durante la captura de video: {e}")
         finally:
+            self.logger.info("Liberando la cámara.")
             camera.release()
 
     def run(self):
