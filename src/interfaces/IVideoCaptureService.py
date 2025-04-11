@@ -1,9 +1,5 @@
 """
 Path: src/interfaces/IVideoCaptureService.py
-
-Interfaz abstracta para servicios de captura de video.
-Define el contrato que deben cumplir todas las implementaciones
-de servicios de captura de video en el sistema.
 """
 
 import abc
@@ -15,7 +11,7 @@ class IVideoCaptureService(abc.ABC):
     Define el contrato que deben cumplir las implementaciones,
     facilitando la inyección de dependencias y la futura extensión.
     """
-    
+
     @abc.abstractmethod
     def open_camera(self) -> None:
         """
@@ -25,7 +21,7 @@ class IVideoCaptureService(abc.ABC):
             RuntimeError: Si no se puede abrir la cámara.
         """
         pass
-    
+
     @abc.abstractmethod
     def read_frame(self) -> Any:
         """
@@ -38,7 +34,7 @@ class IVideoCaptureService(abc.ABC):
             RuntimeError: Si la cámara no está abierta o si falla la lectura del frame.
         """
         pass
-    
+
     @abc.abstractmethod
     def release_camera(self) -> None:
         """

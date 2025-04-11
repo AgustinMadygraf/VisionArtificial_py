@@ -2,13 +2,13 @@
 VideoCaptureService: Implementación del servicio de captura de video.
 """
 
+from typing import Any
 import cv2
 from src.interfaces.IVideoCaptureService import IVideoCaptureService
-from typing import Any
 
 class VideoCaptureService(IVideoCaptureService):
     """Implementación que maneja la captura de video desde una cámara."""
-    
+
     def __init__(self, camera_index=0):
         self.camera_index = camera_index
         self.camera = None

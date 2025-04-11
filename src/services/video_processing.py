@@ -2,13 +2,13 @@
 VideoProcessingService: Implementación del servicio de procesamiento de video.
 """
 
-import cv2
 from typing import Any
+import cv2
 from src.interfaces.IVideoProcessingService import IVideoProcessingService
 
 class VideoProcessingService(IVideoProcessingService):
     """Implementación que maneja el procesamiento de frames de video."""
-    
+
     def process_frame(self, frame: Any) -> Any:
         """
         Procesa un frame de video aplicando transformaciones.
@@ -24,7 +24,7 @@ class VideoProcessingService(IVideoProcessingService):
         """
         if frame is None:
             raise ValueError("Frame cannot be None")
-            
+
         try:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # pylint: disable=E1101
             frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR)  # pylint: disable=E1101
