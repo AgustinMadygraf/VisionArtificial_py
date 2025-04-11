@@ -5,7 +5,7 @@ Path: src/utils/logging/simple_logger.py
 import sys
 import logging
 import colorlog
-from src.interfaces.ILogger import ILogger
+from src.interfaces.i_logger import ILogger
 
 # Configuración global inicial (no es usada por LoggerService)
 logger = logging.getLogger("profebot")

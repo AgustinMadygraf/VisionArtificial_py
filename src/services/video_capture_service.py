@@ -4,7 +4,7 @@ VideoCaptureService: Implementación del servicio de captura de video.
 
 from typing import Any
 import cv2
-from src.interfaces.IVideoCaptureService import IVideoCaptureService
+from src.interfaces.i_video_capture_service import IVideoCaptureService
 
 class VideoCaptureService(IVideoCaptureService):
     """Implementación que maneja la captura de video desde una cámara."""

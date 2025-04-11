@@ -9,11 +9,8 @@ from src.utils.logging.simple_logger import LoggerService
 
 logger = LoggerService()
 
-def generate_frames(process=False):
+def generate_frames(capture_service, processing_service, process=False):
     """Generates video frames, optionally processing them."""
-    capture_service = VideoCaptureService()
-    processing_service = VideoProcessingService()
-
     try:
         capture_service.open_camera()
         while True:

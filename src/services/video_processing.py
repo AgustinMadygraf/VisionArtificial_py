@@ -4,7 +4,7 @@ VideoProcessingService: Implementación del servicio de procesamiento de video.
 
 from typing import Any
 import cv2
-from src.interfaces.IVideoProcessingService import IVideoProcessingService
+from src.interfaces.i_video_processing_service import IVideoProcessingService
 
 class VideoProcessingService(IVideoProcessingService):
     """Implementación que maneja el procesamiento de frames de video."""

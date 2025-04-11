@@ -16,7 +16,7 @@ class IVideoProcessingService(abc.ABC):
     facilitando la inyección de dependencias y la sustitución
     de implementaciones para diferentes algoritmos de procesamiento.
     """
-    
+
     @abc.abstractmethod
     def process_frame(self, frame: Any) -> Any:
         """
