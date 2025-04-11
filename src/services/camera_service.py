@@ -3,8 +3,6 @@ Path: src/services/camera_service.py
 """
 
 import cv2
-from src.services.video_capture_service import VideoCaptureService
-from src.services.video_processing import VideoProcessingService
 from src.utils.logging.simple_logger import LoggerService
 
 logger = LoggerService()
@@ -12,13 +10,17 @@ logger = LoggerService()
 def generate_frames(capture_service, processing_service, process=False):
     """Generates video frames, optionally processing them."""
     try:
+        logger.debug("Opening camera for frame generation.")
         capture_service.open_camera()
         while True:
+#            logger.debug("Reading frame from camera.")
             frame = capture_service.read_frame()
 
             if process:
+#                logger.debug("Processing frame.")
                 frame = processing_service.process_frame(frame)
 
+#            logger.debug("Encoding frame to JPEG format.")
             _, buffer = cv2.imencode('.jpg', frame)  # pylint: disable=E1101
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')

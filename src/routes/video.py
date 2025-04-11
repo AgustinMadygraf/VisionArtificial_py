@@ -6,7 +6,7 @@ from flask import Blueprint, Response
 from src.services.camera_service import generate_frames
 from src.utils.logging.simple_logger import LoggerService
 from src.services.video_capture_service import VideoCaptureService
-from src.services.video_processing import VideoProcessingService
+from src.services.video_process import VideoProcessingService
 
 logger = LoggerService()
 
@@ -16,8 +16,11 @@ video_bp = Blueprint('video', __name__)
 def video_original():
     """Route for the original video feed."""
     try:
+        logger.debug("Attempting to process request for /video_original route.")
         capture_service = VideoCaptureService()
         processing_service = VideoProcessingService()
+        logger.debug("Services initialized for /video_original route.")
+        logger.debug("Processing request for /video_original route.")
         return Response(
             generate_frames(capture_service, processing_service, process=False),
             mimetype='multipart/x-mixed-replace; boundary=frame'

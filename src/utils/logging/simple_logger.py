@@ -33,6 +33,7 @@ class LoggerService(ILogger):
         self._logger = logging.getLogger("app_logger")
         if '--verbose' in sys.argv:
             self._logger.setLevel(logging.DEBUG)
+            self._logger.debug("Verbose mode is enabled.")
         else:
             self._logger.setLevel(logging.INFO)
         if not self._logger.handlers:

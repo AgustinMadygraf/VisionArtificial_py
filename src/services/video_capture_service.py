@@ -1,5 +1,5 @@
 """
-VideoCaptureService: Implementación del servicio de captura de video.
+Path: src/services/video_capture_service.py
 """
 
 from typing import Any
