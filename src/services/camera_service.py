@@ -3,8 +3,6 @@ Path: src/services/camera_service.py
 """
 
 import cv2
-from src.services.video_capture_service import VideoCaptureService
-from src.services.video_processing import VideoProcessingService
 from src.utils.logging.simple_logger import LoggerService
 
 logger = LoggerService()

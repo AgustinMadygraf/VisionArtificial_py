@@ -8,6 +8,17 @@
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
     <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Añade un estilo para un placeholder o imagen detenida */
+        .video-placeholder {
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            min-height: 200px; /* Ajusta según sea necesario */
+        }
+    </style>
 </head>
 
 <body>
@@ -18,14 +29,20 @@
         <div id="container" class="row mt-4">
             <div class="video-section col-md-6 mb-3">
                 <h2>Original</h2>
-                <a href="/video_original" target="_blank" class="btn btn-primary">Abrir Video Original</a>
-                <img id="vid" src="{{ url_for('video.video_original') }}" class="w-100" alt="Video Feed">
+                <div class="mb-2">
+                    <button id="start-original" class="btn btn-success btn-sm">Iniciar</button>
+                    <button id="stop-original" class="btn btn-danger btn-sm">Detener</button>
+                </div>
+                <img id="video-original-img" class="w-100 video-placeholder" alt="Video Feed Original Detenido">
             </div>
             <div class="image-section col-md-6 mb-3">
                 <h2>Procesada</h2>
-                <a href="/video_process" target="_blank" class="btn btn-primary">Abrir Video Procesado</a>
+                <div class="mb-2">
+                    <button id="start-processed" class="btn btn-success btn-sm">Iniciar</button>
+                    <button id="stop-processed" class="btn btn-danger btn-sm">Detener</button>
+                </div>
                 <div id="image-canvas" class="border">
-                    <img src="{{ url_for('video.video_process') }}" class="w-100">
+                    <img id="video-processed-img" class="w-100 video-placeholder" alt="Video Feed Procesado Detenido">
                 </div>
             </div>
         </div>
