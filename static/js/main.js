@@ -4,56 +4,56 @@ Path: static/js/main.js
 
 console.log("iniciando main.js");
 
-document.addEventListener('DOMContentLoaded', () => {
-    const videoOriginalImg = document.getElementById('video-original-img');
-    const videoProcessedImg = document.getElementById('video-processed-img');
+class VideoStreamManager {
+    constructor(imgElement, startButton, stopButton, streamUrl, placeholderText) {
+        this.imgElement = imgElement;
+        this.startButton = startButton;
+        this.stopButton = stopButton;
+        this.streamUrl = streamUrl;
+        this.placeholderText = placeholderText;
 
-    const startOriginalBtn = document.getElementById('start-original');
-    const stopOriginalBtn = document.getElementById('stop-original');
-    const startProcessedBtn = document.getElementById('start-processed');
-    const stopProcessedBtn = document.getElementById('stop-processed');
-
-    // URLs de los streams
-    const originalVideoUrl = '/video_original';
-    const processedVideoUrl = '/video_process';
-
-    function startStream(imgElement, url) {
-        imgElement.src = `${url}?t=${new Date().getTime()}`;
-        imgElement.alt = 'Cargando video...';
-        imgElement.classList.remove('video-placeholder');
+        this.initEventListeners();
     }
 
-    function stopStream(imgElement, altText) {
-        imgElement.src = '';
-        imgElement.alt = altText;
-        imgElement.classList.add('video-placeholder');
-    }
+    initEventListeners() {
+        this.startButton.addEventListener('click', () => this.startStream());
+        this.stopButton.addEventListener('click', () => this.stopStream());
 
-    // Event Listeners para el video original
-    startOriginalBtn.addEventListener('click', () => {
-        startStream(videoOriginalImg, originalVideoUrl);
-    });
-
-    stopOriginalBtn.addEventListener('click', () => {
-        stopStream(videoOriginalImg, 'Video Feed Original Detenido');
-    });
-
-    // Event Listeners para el video procesado
-    startProcessedBtn.addEventListener('click', () => {
-        startStream(videoProcessedImg, processedVideoUrl);
-    });
-
-    stopProcessedBtn.addEventListener('click', () => {
-        stopStream(videoProcessedImg, 'Video Feed Procesado Detenido');
-    });
-
-    // Manejo de errores en la carga de la imagen
-    [videoOriginalImg, videoProcessedImg].forEach(img => {
-        img.onerror = () => {
-            console.error(`Error al cargar el stream: ${img.src}`);
-            img.alt = 'Error al cargar el video. Intenta iniciar de nuevo.';
-            img.classList.add('video-placeholder');
-            img.src = '';
+        this.imgElement.onerror = () => {
+            console.error(`Error al cargar el stream: ${this.imgElement.src}`);
+            this.imgElement.alt = 'Error al cargar el video. Intenta iniciar de nuevo.';
+            this.imgElement.classList.add('video-placeholder');
+            this.imgElement.src = '';
         };
-    });
+    }
+
+    startStream() {
+        this.imgElement.src = `${this.streamUrl}?t=${new Date().getTime()}`;
+        this.imgElement.alt = 'Cargando video...';
+        this.imgElement.classList.remove('video-placeholder');
+    }
+
+    stopStream() {
+        this.imgElement.src = '';
+        this.imgElement.alt = this.placeholderText;
+        this.imgElement.classList.add('video-placeholder');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const videoOriginalManager = new VideoStreamManager(
+        document.getElementById('video-original-img'),
+        document.getElementById('start-original'),
+        document.getElementById('stop-original'),
+        '/video_original',
+        'Video Feed Original Detenido'
+    );
+
+    const videoProcessedManager = new VideoStreamManager(
+        document.getElementById('video-processed-img'),
+        document.getElementById('start-processed'),
+        document.getElementById('stop-processed'),
+        '/video_process',
+        'Video Feed Procesado Detenido'
+    );
 });
