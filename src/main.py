@@ -7,7 +7,7 @@ from flask_cors import CORS
 from src.config.default import DefaultConfig
 from src.routes.home import home_bp
 from src.routes.video import video_bp
-
+# Importa aquí futuros Blueprints...
 
 class MainApp:
     "Clase principal de la aplicación Flask."
@@ -28,7 +28,10 @@ class MainApp:
         CORS(app)  # Habilita CORS para todas las rutas
         app.config.from_object(config_object)
 
+        # Registro de Blueprints principales
         app.register_blueprint(home_bp)
         app.register_blueprint(video_bp)
+        # Registra aquí futuros Blueprints, por ejemplo:
+        # app.register_blueprint(admin_bp)
 
         return app
