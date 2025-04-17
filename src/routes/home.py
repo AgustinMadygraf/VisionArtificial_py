@@ -2,16 +2,16 @@
 Path: src/routes/home.py
 """
 
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect
 import jinja2
 
 home_bp = Blueprint('home', __name__)
 
 @home_bp.route('/')
 def home():
-    """Ruta principal que renderiza la plantilla HTML."""
+    """Redirige a http://127.0.0.1:80/computervision."""
     try:
-        return render_template('index.html')
+        return redirect('http://127.0.0.1:80/computervision')
     except jinja2.exceptions.TemplateNotFound:
         return "Plantilla no encontrada", 404
     except jinja2.exceptions.TemplateError:

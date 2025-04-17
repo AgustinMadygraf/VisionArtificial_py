@@ -3,6 +3,7 @@ Path: src/main.py
 """
 
 from flask import Flask
+from flask_cors import CORS
 from src.config.default import DefaultConfig
 from src.routes.home import home_bp
 from src.routes.video import video_bp
@@ -24,6 +25,7 @@ class MainApp:
         """Factory function to create and configure the Flask application."""
         config_class = DefaultConfig()
         app = Flask(__name__, template_folder="../templates", static_folder="../static")
+        CORS(app)  # Habilita CORS para todas las rutas
         app.config.from_object(config_class)
 
         app.register_blueprint(home_bp)
