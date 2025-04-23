@@ -10,6 +10,7 @@ SERVICES_CONFIG = {
     'video_processing_service': {
         'processing_mode': 'fast',
         'use_gpu': False,
+        'processor_name': 'grayscale',  # Selección dinámica de algoritmo
     },
     # Puedes agregar más configuraciones de servicios aquí
 }
