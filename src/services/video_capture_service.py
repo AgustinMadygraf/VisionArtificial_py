@@ -17,11 +17,18 @@ class VideoCaptureService(IVideoCaptureService):
     evita conflictos en escenarios multiusuario.
     """
 
-    def __init__(self, camera_index=0):
-        # Lock para acceso concurrente seguro a la cámara
+    def __init__(self, camera_index=0, timeout=None):
+        """
+        Inicializa el servicio de captura de video.
+        Args:
+            camera_index (int): Índice de la cámara a usar.
+            timeout (int, opcional): Tiempo de espera para operaciones 
+            (no implementado, solo para compatibilidad).
+        """
         self._lock = threading.Lock()
         self.camera_index = camera_index
         self.camera = None
+        self.timeout = timeout
 
     def open_camera(self) -> None:
         """

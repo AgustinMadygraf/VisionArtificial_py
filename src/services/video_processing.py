@@ -9,14 +9,17 @@ from src.interfaces.i_video_processing_service import IVideoProcessingService
 class VideoProcessingService(IVideoProcessingService):
     """Implementación que maneja el procesamiento de frames de video."""
 
-    def __init__(self, processing_mode=None):
+    def __init__(self, processing_mode=None, use_gpu=False):
         """
         Inicializa el servicio de procesamiento de video.
         Args:
             processing_mode (str, opcional): Modo de procesamiento ('fast', 'accurate', etc).
+            use_gpu (bool, opcional): Si se debe usar GPU (no implementado, 
+            solo para compatibilidad).
             **kwargs: Otros parámetros de configuración ignorados por compatibilidad.
         """
         self.processing_mode = processing_mode
+        self.use_gpu = use_gpu
 
     def process_frame(self, frame: Any) -> Any:
         """
