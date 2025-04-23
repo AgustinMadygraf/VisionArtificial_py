@@ -11,7 +11,7 @@ def load_config():
     """
     Carga la clase de configuración adecuada según la variable de entorno APP_ENV.
     Valores posibles: 'default', 'production'.
-    Retorna la clase de configuración correspondiente.
+    Retorna la instancia de configuración correspondiente.
     """
     env = os.environ.get('APP_ENV', 'default').lower()
     if env == 'production':
@@ -39,4 +39,4 @@ def load_config():
                     pass
             setattr(EnvConfig, key, val)
 
-    return EnvConfig
+    return EnvConfig()  # Retornar instancia, no clase

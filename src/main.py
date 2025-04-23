@@ -10,6 +10,10 @@ from src.config.default import DefaultConfig
 from src.extensions import init_extensions
 from src.core.lifecycle_manager import lifecycle_manager
 from src import routes
+from src.middleware.error_handler import register_error_handlers
+from src.utils.logging.simple_logger import LoggerService
+from src.core.di.container import AppContainer
+from src.core.di.flask_integration import attach_container
 
 def configure_app(app, config_object):
     " Configura la aplicación Flask con el objeto de configuración proporcionado."
@@ -45,6 +49,9 @@ def create_flask_app(config_object=None):
     configure_app(app, config_object)
     init_extensions_wrapper(app)
     register_blueprints(app)
+    # Inicializar y adjuntar el contenedor DI
+    container = AppContainer()
+    attach_container(app, container)
     return app
 
 class MainApp:
@@ -53,6 +60,8 @@ class MainApp:
         self.logger = logger
         self.config_object = config_object or DefaultConfig
         self.app = create_flask_app(self.config_object)
+        # Registrar el middleware de manejo de errores
+        register_error_handlers(self.app, logger=self.logger)
 
     def run(self, **kwargs):
         "Inicia la aplicación Flask."

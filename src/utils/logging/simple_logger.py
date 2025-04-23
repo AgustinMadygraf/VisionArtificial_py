@@ -6,6 +6,7 @@ import sys
 import logging
 import colorlog
 from src.interfaces.i_logger import ILogger
+from src.utils.logging.context_logger import get_context_logger
 
 # Configuración global inicial (no es usada por LoggerService)
 logger = logging.getLogger("profebot")
@@ -29,13 +30,16 @@ class LoggerService(ILogger):
     (debug, info, warning, error, exception).
     Se configura según la variable '--verbose' de sys.argv para ajustar el nivel de detalle.
     """
-    def __init__(self):
-        self._logger = logging.getLogger("app_logger")
+    def __init__(self, use_context=False):
+        if use_context:
+            self._logger = get_context_logger("app_logger")
+        else:
+            self._logger = logging.getLogger("app_logger")
         if '--verbose' in sys.argv:
             self._logger.setLevel(logging.DEBUG)
         else:
             self._logger.setLevel(logging.INFO)
-        if not self._logger.handlers:
+        if not self._logger.logger.handlers if hasattr(self._logger, 'logger') else self._logger.handlers:
             app_console_handler = logging.StreamHandler()
             app_formatter = colorlog.ColoredFormatter(
                 "%(log_color)s%(filename)15.15s:%(lineno)03d - %(levelname)-5.5s - %(message)s",
@@ -48,7 +52,10 @@ class LoggerService(ILogger):
                 }
             )
             app_console_handler.setFormatter(app_formatter)
-            self._logger.addHandler(app_console_handler)
+            if hasattr(self._logger, 'logger'):
+                self._logger.logger.addHandler(app_console_handler)
+            else:
+                self._logger.addHandler(app_console_handler)
 
     def debug(self, msg: str, *args, **kwargs) -> None:
         "Registra un mensaje de depuración."

@@ -6,6 +6,7 @@ from typing import Any
 import threading
 import cv2
 from src.interfaces.i_video_capture_service import IVideoCaptureService
+from src.services.recovery.strategies import SimpleRetryStrategy
 
 class VideoCaptureService(IVideoCaptureService):
     """
@@ -17,18 +18,20 @@ class VideoCaptureService(IVideoCaptureService):
     evita conflictos en escenarios multiusuario.
     """
 
-    def __init__(self, camera_index=0, timeout=None):
+    def __init__(self, camera_index=0, timeout=None, recovery_strategy=None):
         """
         Inicializa el servicio de captura de video.
         Args:
             camera_index (int): Índice de la cámara a usar.
             timeout (int, opcional): Tiempo de espera para operaciones 
             (no implementado, solo para compatibilidad).
+            recovery_strategy (SimpleRetryStrategy, opcional): Estrategia de recuperación ante fallos.
         """
         self._lock = threading.Lock()
         self.camera_index = camera_index
         self.camera = None
         self.timeout = timeout
+        self.recovery_strategy = recovery_strategy or SimpleRetryStrategy(retries=3, delay=1)
 
     def open_camera(self) -> None:
         """
@@ -38,10 +41,12 @@ class VideoCaptureService(IVideoCaptureService):
         Raises:
             RuntimeError: Si no se puede abrir la cámara.
         """
-        with self._lock:
-            self.camera = cv2.VideoCapture(self.camera_index, cv2.CAP_ANY)  # pylint: disable=E1101
-            if not self.camera.isOpened():
-                raise RuntimeError(f"Cannot open camera with index {self.camera_index}")
+        def _open():
+            with self._lock:
+                self.camera = cv2.VideoCapture(self.camera_index, cv2.CAP_ANY)  # pylint: disable=E1101
+                if not self.camera.isOpened():
+                    raise RuntimeError(f"Cannot open camera with index {self.camera_index}")
+        self.recovery_strategy.recover(_open)
 
     def read_frame(self) -> Any:
         """
@@ -53,13 +58,15 @@ class VideoCaptureService(IVideoCaptureService):
         Raises:
             RuntimeError: Si la cámara no está abierta o si falla la lectura del frame.
         """
-        with self._lock:
-            if not self.camera:
-                raise RuntimeError("Camera is not opened")
-            success, frame = self.camera.read()
-            if not success:
-                raise RuntimeError("Failed to read frame from camera")
-            return frame
+        def _read():
+            with self._lock:
+                if not self.camera:
+                    raise RuntimeError("Camera is not opened")
+                success, frame = self.camera.read()
+                if not success:
+                    raise RuntimeError("Failed to read frame from camera")
+                return frame
+        return self.recovery_strategy.recover(_read)
 
     def release_camera(self) -> None:
         """
